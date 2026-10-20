@@ -1,0 +1,26 @@
+---
+// Square-ended arrow icons from the design. Sizes up to 16px use the lighter 16-unit set.
+interface Props {
+  name: 'right' | 'down' | 'up';
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 16, class: className } = Astro.props;
+const small = size <= 16;
+const paths = small
+  ? { right: 'M2 8h11M8 3l5 5-5 5', down: 'M8 2v10M3 8l5 5 5-5', up: 'M8 14V3M3 8l5-5 5 5' }
+  : { right: 'M4 14h19M15 6l8 8-8 8', down: 'M14 3v20M6 15l8 8 8-8', up: 'M14 25V5M6 13l8-8 8 8' };
+---
+
+<svg
+  class={className}
+  width={size}
+  height={size}
+  viewBox={small ? '0 0 16 16' : '0 0 28 28'}
+  fill="none"
+  stroke="currentColor"
+  stroke-width={small ? 2 : 2.5}
+  stroke-linecap="square"
+  aria-hidden="true"><path d={paths[name]}></path></svg
+>

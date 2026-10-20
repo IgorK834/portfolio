@@ -1,0 +1,54 @@
+---
+// Square arrow cell. On hover an accent block slides in and the arrow inverts.
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  /** Accessible name; the cell itself only shows an arrow. */
+  label: string;
+  direction?: 'right' | 'down' | 'up';
+  /** Accent colour that slides in (a CSS colour). */
+  fill?: string;
+  /** Arrow colour while the accent is showing. */
+  ink?: string;
+  size?: number;
+}
+
+const { href, label, direction = 'right', fill = 'var(--color-blue)', ink = '#fff', size = 28 } = Astro.props;
+---
+
+<a class="go" href={href} aria-label={label} style={`--fill:${fill};--ink:${ink}`}>
+  <Icon name={direction} size={size} />
+</a>
+
+<style>
+  .go {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--go-height, 100%);
+    min-height: var(--go-min, 0);
+    border-bottom: var(--go-border, 0);
+    transition: color 0.2s var(--ease);
+  }
+  .go::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill);
+    transform: translateX(-101%);
+    transition: transform 0.26s var(--ease);
+  }
+  .go:hover::before,
+  .go:focus-visible::before {
+    transform: translateX(0);
+  }
+  .go:hover,
+  .go:focus-visible {
+    color: var(--ink);
+  }
+</style>
