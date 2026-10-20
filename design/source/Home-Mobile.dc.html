@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Igor Kadziela — Mobile homepage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=League+Spartan:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2369F5;--red:#FE3D3C;--yellow:#FFB523;--paper:#FFFFFF;--ink:#17191D;--line:#D7DEE7;--bg:#C8CFD8;--mute:#555C69;--body:#343A46}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul,ol,dl,dd,dt,figure,button{margin:0;padding:0}
+ul,ol{list-style:none}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 6px #fff}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-80px;background:var(--ink);color:#fff;padding:12px 16px;font-weight:700;z-index:60}
+.skip:focus{top:12px}
+
+.site{position:relative;max-width:430px;margin:0 auto;background:var(--paper);overflow-x:clip}
+.gl{position:absolute;top:0;bottom:0;left:56px;width:1px;background:var(--line);z-index:0;pointer-events:none}
+.mrow{position:relative;z-index:1;display:grid;grid-template-columns:56px minmax(0,1fr)}
+.mrow>*{min-width:0}
+.bt{border-top:1px solid var(--line)}
+.rail{display:flex;justify-content:center;padding-top:28px}
+.vt{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+
+.disp{font-family:'League Spartan','Futura','Century Gothic',sans-serif;font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:.005em}
+.lbl{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;line-height:1.4}
+.mute{color:var(--mute)}
+.ph{display:inline-block;max-width:100%;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;color:#4B5261;border:1px dashed #8D96A6;padding:1px 5px}
+.tag{display:inline-block;background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;line-height:1.4}
+.tag-y{background:var(--yellow);color:var(--ink)}
+
+/* menu */
+.menu-btn{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;background:none;border:0;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);cursor:pointer}
+.mi{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;min-height:76px;border-top:1px solid var(--line);color:var(--ink);transition:color .2s}
+.mi::before{content:'';position:absolute;inset:0;background:var(--h);transform:scaleX(0);transform-origin:left;transition:transform .28s ease;z-index:-1}
+.mi:hover::before,.mi:focus-visible::before,.mi:active::before{transform:scaleX(1)}
+.mi:hover,.mi:focus-visible,.mi:active{color:var(--hi)}
+
+/* CTAs */
+.mcta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.mcta .ph{font-size:10.5px}
+.mcta-p{background:var(--ink);color:#fff;padding:0 16px;border-top:0}
+.mcta-p:active{background:var(--blue)}
+.mcta-last{border-bottom:1px solid var(--line)}
+.btn{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px;padding:0 18px;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:2px solid var(--ink)}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-inv{border-color:#fff;color:#fff}
+
+/* selected-work index */
+.mix{isolation:isolate;overflow:hidden;min-height:132px;color:var(--ink);transition:color .2s}
+.mix::before{content:'';position:absolute;inset:0;background:var(--h);transform:scaleX(0);transform-origin:left;transition:transform .3s ease;z-index:-1}
+.mix:hover::before,.mix:focus-visible::before,.mix:active::before{transform:scaleX(1)}
+.mix:hover,.mix:focus-visible,.mix:active{color:var(--hi)}
+.mix .sub{opacity:.88}
+.mix .sqm{background:var(--h);transition:background .2s}
+.mix:hover .sqm,.mix:active .sqm{background:var(--hi)}
+
+/* project parts */
+.numwrap{position:absolute;z-index:3}
+.num{position:relative;display:block;font-family:'League Spartan','Futura',sans-serif;font-weight:900;line-height:.76;letter-spacing:-.03em;color:var(--ink)}
+.sq{position:absolute;left:4px;bottom:12px;width:78px;height:78px}
+.fact{padding:13px 0;border-top:1px solid var(--line)}
+.fact dd{margin:4px 0 0;font-size:15px;font-weight:600;line-height:1.4}
+.lead{font-size:18px;line-height:1.5;font-weight:500}
+.hl{display:grid;grid-template-columns:22px minmax(0,1fr);padding:15px 0;border-top:1px solid var(--line)}
+.hm{width:10px;height:10px;background:var(--acc);margin-top:6px}
+.ht{font-size:15px;font-weight:700;line-height:1.35}
+.hd{font-size:14.5px;line-height:1.5;color:var(--body);margin-top:3px}
+.tl li{padding:6px 0;border-top:1px solid var(--line);font-size:15px;font-weight:500}
+.tl li:last-child{border-bottom:1px solid var(--line)}
+.tg{font-size:15px;font-weight:500;line-height:1.55;margin-top:4px}
+.lkm{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:10px 16px;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:2px solid var(--ink);margin-bottom:12px}
+.lkm small{display:block;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;font-weight:400;letter-spacing:0;text-transform:none;line-height:1.45;margin-top:2px}
+.lkm-a{background:var(--acc);border-color:var(--acc);color:var(--on)}
+
+.shot{overflow:hidden;background:#EDF0F4;border:1px solid #CBD2DC;box-shadow:0 18px 36px -24px rgba(23,25,29,.55);transition:background .3s}
+.shot:active{background:var(--soft)}
+.shot .in{position:absolute;inset:0}
+.shot .b{background:#CDD3DC}
+.shot .h{background:#8F98A8;transition:background .25s}
+.shot:active .h{background:var(--acc)}
+.shot .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;background:#fff;border-top:1px solid #CBD2DC;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;line-height:1.3;color:#4B5261}
+
+.mk{display:inline-block;width:8px;height:8px;margin-left:5px;vertical-align:1px}
+.mk-b{background:var(--blue)}.mk-r{background:var(--red)}.mk-y{background:var(--yellow)}
+.tech{display:flex;flex-wrap:wrap;gap:8px 22px}
+.tech li{font-size:16px;font-weight:600;white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</helmet>
+
+<div id="top">
+<a class="skip" href="#main">Skip to content</a>
+<div class="site">
+<div class="gl" aria-hidden="true"></div>
+
+<!-- ============ HEADER + MOBILE MENU ============ -->
+<header class="mrow" style="height:64px;border-bottom:1px solid var(--line)">
+  <a href="#top" aria-label="Igor Kadziela — home" style="display:flex;align-items:center;justify-content:center">
+    <span class="disp" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:var(--ink);color:#fff;font-size:18px;line-height:1">IK</span>
+  </a>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 20px">
+    <span class="lbl" style="font-size:11px">Igor Kadziela</span>
+    <button type="button" class="menu-btn" onClick="{{ toggle }}" aria-expanded="{{ open }}" aria-controls="m-menu">
+      <sc-if value="{{ closed }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M2 5h18M2 11h18M2 17h18"/></svg></sc-if>
+      <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 4l14 14M18 4L4 18"/></svg></sc-if>
+      <span>{{ menuLabel }}</span>
+    </button>
+  </div>
+</header>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+<nav id="m-menu" aria-label="Primary" style="position:absolute;left:0;right:0;top:64px;z-index:40;background:#fff;border-bottom:2px solid var(--ink);box-shadow:0 34px 40px -24px rgba(23,25,29,.4)">
+  <ul>
+    <li><a class="mi" href="#projects" onClick="{{ close }}" style="--h:var(--blue);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">01</span><span class="disp" style="font-size:34px">Projects</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="#about" onClick="{{ close }}" style="--h:var(--red);--hi:var(--ink)"><span class="disp" style="font-size:20px;text-align:center">02</span><span class="disp" style="font-size:34px">About</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="#stack" onClick="{{ close }}" style="--h:var(--yellow);--hi:var(--ink)"><span class="disp" style="font-size:20px;text-align:center">03</span><span class="disp" style="font-size:34px">Stack</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="#resume" onClick="{{ close }}" style="--h:var(--ink);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">04</span><span class="disp" style="font-size:34px">Resume</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="#contact" onClick="{{ close }}" style="--h:var(--blue);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">05</span><span class="disp" style="font-size:34px">Contact</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+  </ul>
+</nav>
+</sc-if>
+
+<main id="main">
+
+<!-- ============ 1. HERO ============ -->
+<section aria-label="Introduction">
+  <div class="mrow">
+    <div class="rail" aria-hidden="true"><span class="vt lbl mute">Software engineer</span></div>
+    <div style="padding:28px 12px 26px 20px">
+      <p class="disp" style="font-size:21px;line-height:1.1">Software Engineer /<br>Full-Stack Engineer</p>
+      <h1 class="disp" style="font-size:56px;margin-top:22px;white-space:nowrap">Igor<br>Kadziela<span class="sr"> — Software Engineer / Full-Stack Engineer</span></h1>
+    </div>
+  </div>
+
+  <div style="position:relative;z-index:1;height:410px">
+    <div aria-hidden="true" style="position:absolute;left:0;right:0;top:90px;bottom:0;background:var(--blue)"></div>
+    <p aria-hidden="true" style="position:absolute;left:19px;top:112px;margin:0;color:#fff;font-family:'League Spartan',sans-serif;font-weight:900;font-size:19px;line-height:1.05;letter-spacing:.14em;writing-mode:vertical-rl;text-orientation:upright">ENGINEER</p>
+    <figure style="position:absolute;right:20px;top:0;width:236px;height:410px">
+      <div role="img" aria-label="Portrait of Igor Kadziela — placeholder; the real black-and-white photograph is to be added" style="position:relative;width:236px;height:410px;background:#DADFE6;overflow:hidden">
+        <svg width="236" height="410" viewBox="0 0 236 410" aria-hidden="true" style="position:absolute;left:0;top:0"><path d="M0 0L236 410M236 0L0 410" stroke="#9AA3B2" stroke-width="1" fill="none"/></svg>
+        <div aria-hidden="true" style="position:absolute;left:10px;top:10px;width:16px;height:16px;border-left:2px solid var(--ink);border-top:2px solid var(--ink)"></div>
+        <div aria-hidden="true" style="position:absolute;right:10px;top:10px;width:16px;height:16px;border-right:2px solid var(--ink);border-top:2px solid var(--ink)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;padding:10px 12px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;line-height:1.5;color:#4B5261;border-top:1px solid #CBD2DC">
+          <strong style="font-weight:500;color:var(--ink)">PORTRAIT — IGOR KADZIELA</strong><br>
+          [REAL PHOTO TO BE ADDED]<br>
+          grayscale(100%) contrast(115%)
+        </div>
+      </div>
+      <figcaption class="sr">Portrait placeholder for Igor Kadziela</figcaption>
+    </figure>
+  </div>
+
+  <div class="mrow bt">
+    <div class="rail"><span class="vt lbl mute">Profile</span></div>
+    <div style="padding:26px 20px 28px">
+      <p style="font-size:19px;line-height:1.5;font-weight:500">I build end-to-end software systems that combine robust backend architecture, modern web interfaces, data processing and AI.</p>
+    </div>
+  </div>
+
+  <div style="position:relative;z-index:1;background:var(--red);padding:22px 20px 14px 76px">
+    <p class="lbl" style="margin-bottom:8px">Core stack</p>
+    <ul aria-label="Core technologies" class="disp" style="font-size:17px;line-height:1.15;font-weight:800">
+      <li style="padding:11px 0;border-top:1px solid rgba(23,25,29,.35)">Java / Spring Boot</li>
+      <li style="padding:11px 0;border-top:1px solid rgba(23,25,29,.35)">TypeScript / React / Next.js</li>
+      <li style="padding:11px 0;border-top:1px solid rgba(23,25,29,.35)">Python / FastAPI</li>
+      <li style="padding:11px 0;border-top:1px solid rgba(23,25,29,.35)">PostgreSQL / PostGIS</li>
+      <li style="padding:11px 0;border-top:1px solid rgba(23,25,29,.35)">AI / RAG</li>
+    </ul>
+  </div>
+
+  <div class="mrow">
+    <div class="rail"><span class="vt lbl mute">Actions</span></div>
+    <div style="padding:28px 20px 30px">
+      <ul aria-label="Primary actions">
+        <li><a class="mcta mcta-p" href="#projects"><span>View projects</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M2 8h11M8 3l5 5-5 5"/></svg></a></li>
+        <li><a class="mcta" href="#resume"><span>Download CV</span><span class="ph">[PDF — TO BE ADDED]</span></a></li>
+        <li style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--line)">
+          <a class="mcta" href="#contact" style="flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;border-top:0;border-right:1px solid var(--line);padding:10px 0;min-height:64px"><span>GitHub</span><span class="ph">[URL — TO BE ADDED]</span></a>
+          <a class="mcta" href="#contact" style="flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;border-top:0;padding:10px 0 10px 14px;min-height:64px"><span>LinkedIn</span><span class="ph">[URL — TO BE ADDED]</span></a>
+        </li>
+        <li><a class="mcta mcta-last" href="#contact"><span>Contact</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M2 8h11M8 3l5 5-5 5"/></svg></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="position:relative;z-index:1;background:var(--yellow);padding:24px 20px 26px 76px">
+    <p class="lbl">Open to</p>
+    <p style="margin-top:6px"><span class="ph" style="background:rgba(255,255,255,.45);border-color:#17191D;color:#17191D">[ROLE / INTERNSHIP / JUNIOR / FULL-TIME — TO BE FILLED]</span></p>
+    <p class="lbl" style="margin-top:18px">Location</p>
+    <p style="margin-top:6px"><span class="ph" style="background:rgba(255,255,255,.45);border-color:#17191D;color:#17191D">[CITY / COUNTRY — OPTIONAL]</span></p>
+  </div>
+</section>
+
+<!-- ============ 2. SELECTED WORK ============ -->
+<section id="projects" aria-labelledby="sw-h">
+  <div class="mrow bt">
+    <div class="rail"><span class="vt lbl mute" aria-hidden="true">03 projects</span></div>
+    <div style="padding:36px 20px 30px">
+      <h2 id="sw-h" class="disp" style="font-size:40px">Selected<br>work</h2>
+      <p style="font-size:16px;line-height:1.5;margin-top:14px">An AI research workspace, a spatial parcel-analysis platform and a team-built course SaaS. Each links to a full case study.</p>
+    </div>
+  </div>
+
+  <a class="mix mrow bt" href="#project-01" style="--h:var(--blue);--hi:#fff">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:24px"><span class="disp" style="font-size:22px">01</span><span class="sqm" style="width:16px;height:16px"></span></div>
+    <div style="padding:24px 20px 24px">
+      <h3 class="disp" style="font-size:30px">ResearchHub</h3>
+      <p class="sub" style="font-size:14.5px;line-height:1.45;margin-top:8px">Source-grounded collaborative AI workspace for students and researchers.</p>
+      <p class="lbl sub" style="margin-top:10px">Active development</p>
+    </div>
+  </a>
+  <a class="mix mrow bt" href="#project-02" style="--h:var(--red);--hi:var(--ink)">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:24px"><span class="disp" style="font-size:22px">02</span><span class="sqm" style="width:16px;height:16px"></span></div>
+    <div style="padding:24px 20px 24px">
+      <h3 class="disp" style="font-size:22px;line-height:1">System Analizy Uwarunkowań Działki</h3>
+      <p class="sub" style="font-size:14.5px;line-height:1.45;margin-top:8px">Spatial / Investment Parcel Analysis Platform</p>
+      <p class="lbl sub" style="margin-top:10px">Spatial / GIS</p>
+    </div>
+  </a>
+  <a class="mix mrow bt" href="#project-03" style="--h:var(--yellow);--hi:var(--ink)">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:24px"><span class="disp" style="font-size:22px">03</span><span class="sqm" style="width:16px;height:16px"></span></div>
+    <div style="padding:24px 20px 24px">
+      <h3 class="disp" style="font-size:30px">PZPP</h3>
+      <p class="sub" style="font-size:14.5px;line-height:1.45;margin-top:8px">Creator / online-course SaaS platform: courses, landing pages, CRM and sales.</p>
+      <p class="lbl sub" style="margin-top:10px">Team project</p>
+    </div>
+  </a>
+
+  <!-- ---------- PROJECT 01 · RESEARCHHUB · BLUE ---------- -->
+  <article id="project-01" aria-labelledby="m1-title" style="--acc:var(--blue);--on:#fff;--soft:#E7EEFE">
+    <div class="mrow bt" style="height:230px">
+      <div></div>
+      <div style="padding:20px 20px 0"><p class="lbl">Project 01 / 03</p><p class="lbl mute" style="margin-top:4px">Active development</p></div>
+      <div class="numwrap" style="left:10px;bottom:-6px">
+        <span class="sq" style="background:var(--blue)"></span>
+        <span class="num" style="font-size:240px">01</span>
+      </div>
+    </div>
+    <div style="position:relative;z-index:1;height:250px;background:var(--blue)">
+      <div class="shot" role="img" aria-label="Placeholder for a ResearchHub workspace screenshot — to be added" style="position:absolute;left:36px;top:26px;width:334px;height:244px;z-index:2">
+        <div class="in" style="display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:12px 12px 44px">
+          <div><div class="b" style="height:7px;width:55%;margin-bottom:10px"></div><div class="b" style="height:22px;margin-bottom:6px"></div><div class="h" style="height:22px;margin-bottom:6px"></div><div class="b" style="height:22px;margin-bottom:6px"></div><div class="b" style="height:22px"></div></div>
+          <div style="background:#fff;border:1px solid #CBD2DC;padding:14px"><div class="h" style="height:11px;width:46%;margin-bottom:14px"></div><div class="b" style="height:6px;margin-bottom:8px"></div><div class="b" style="height:6px;width:92%;margin-bottom:8px"></div><div class="h" style="height:6px;width:76%;margin-bottom:8px"></div><div class="b" style="height:6px;width:86%;margin-bottom:8px"></div><div class="b" style="height:6px;margin-bottom:8px"></div><div class="b" style="height:6px;width:60%"></div></div>
+        </div>
+        <div class="cap">[SCREENSHOT PLACEHOLDER — ResearchHub]</div>
+      </div>
+    </div>
+    <div class="bt" style="position:relative;z-index:1;padding:50px 20px 30px;border-top:0">
+      <h2 id="m1-title" class="disp" style="font-size:42px;white-space:nowrap">ResearchHub</h2>
+      <p style="font-size:18px;line-height:1.45;font-weight:500;margin-top:16px">Source-grounded collaborative AI workspace for students and researchers.</p>
+    </div>
+
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Overview</h3></div>
+      <div style="padding:28px 20px 30px">
+        <p class="lead">A collaborative research environment where teams work with PDFs, DOCX files, spreadsheets and datasets, write shared reports, ask source-grounded AI questions, generate cited content and run reproducible data analyses, with provenance kept back to the source material.</p>
+        <dl style="margin-top:22px">
+          <div class="fact"><dt class="lbl mute">Status</dt><dd>Active development</dd></div>
+          <div class="fact"><dt class="lbl mute">My role</dt><dd><span class="ph">[TO BE FILLED — scope of my contribution]</span></dd></div>
+          <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Source</dt><dd>Private repository</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Highlights</h3></div>
+      <div style="padding:26px 20px 30px">
+        <ol>
+          <li class="hl" style="border-top:0;padding-top:0"><span class="hm"></span><div><p class="ht">Source-grounded AI / RAG</p><p class="hd">Not a generic chatbot: citations and provenance run from each generated claim back to its source chunks.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Versioned sources, audited AI calls</p><p class="hd">Research sources are versioned. Model calls go through a structured gateway and are audited.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Spring backend + Python worker</p><p class="hd">Responsibilities are explicitly split between the Spring Boot backend and an internal FastAPI AI / data worker, with an isolated Python environment for scientific computation.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Realtime editing, enforced boundaries</p><p class="hd">Collaborative document editing, workspace authorization boundaries, and automated tests with coverage gates.</p></div></li>
+        </ol>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Technologies</h3></div>
+      <div style="padding:26px 20px 30px">
+        <p class="lbl">Backend &amp; AI worker</p><p class="tg">Java 25 · Spring Boot 4.1 · Maven · Python 3.13 · FastAPI</p>
+        <p class="lbl" style="margin-top:18px">Frontend &amp; realtime</p><p class="tg">React · TypeScript · Webpack · TanStack Query · Tiptap / ProseMirror · Yjs · Hocuspocus</p>
+        <p class="lbl" style="margin-top:18px">Data &amp; infrastructure</p><p class="tg">PostgreSQL · pgvector · Azure Blob Storage / Azurite · Docker</p>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Links</h3></div>
+      <div style="padding:26px 20px 34px">
+        <a class="lkm lkm-a" href="Case-Study-Mobile.dc.html" aria-label="View ResearchHub case study"><span>Case study</span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+        <a class="lkm" href="#project-01" aria-label="Open ResearchHub live demo"><span>Live demo<small>researchhub.igorkadziela.dev <span class="ph">[URL TBC]</span></small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+      </div>
+    </div>
+  </article>
+
+  <!-- ---------- PROJECT 02 · PARCEL ANALYSIS · RED ---------- -->
+  <article id="project-02" aria-labelledby="m2-title" style="--acc:var(--red);--on:var(--ink);--soft:#FFE9E8">
+    <div class="mrow bt" style="height:230px">
+      <div></div>
+      <div style="padding:20px 20px 0;text-align:left"><p class="lbl">Project 02 / 03</p><p class="lbl mute" style="margin-top:4px">Spatial / GIS</p></div>
+      <div class="numwrap" style="right:12px;bottom:-6px">
+        <span class="sq" style="background:var(--red);left:auto;right:0"></span>
+        <span class="num" style="font-size:240px">02</span>
+      </div>
+    </div>
+    <div style="position:relative;z-index:1;height:250px;background:var(--red)">
+      <div class="shot" role="img" aria-label="Placeholder for a parcel-analysis map screenshot — to be added" style="position:absolute;left:36px;top:26px;width:334px;height:244px;z-index:2">
+        <div class="in" style="display:grid;grid-template-columns:minmax(0,1fr) 74px;gap:10px;padding:12px 12px 44px">
+          <div style="position:relative;background:#fff;border:1px solid #CBD2DC;overflow:hidden">
+            <div class="b" style="position:absolute;left:6%;top:10%;width:32%;height:28%"></div>
+            <div class="b" style="position:absolute;left:44%;top:8%;width:42%;height:22%"></div>
+            <div class="b" style="position:absolute;left:0;right:0;top:41%;height:6px"></div>
+            <div class="h" style="position:absolute;left:30%;top:54%;width:27%;height:34%"></div>
+            <div class="b" style="position:absolute;left:62%;top:52%;width:30%;height:36%"></div>
+            <div class="b" style="position:absolute;left:6%;top:56%;width:18%;height:30%"></div>
+          </div>
+          <div><div class="b" style="height:7px;width:60%;margin-bottom:12px"></div><div style="display:flex;gap:6px;margin-bottom:10px"><div class="h" style="width:11px;height:11px"></div><div class="b" style="height:6px;flex:1;margin-top:3px"></div></div><div style="display:flex;gap:6px;margin-bottom:10px"><div class="b" style="width:11px;height:11px"></div><div class="b" style="height:6px;flex:1;margin-top:3px"></div></div><div style="display:flex;gap:6px"><div class="b" style="width:11px;height:11px"></div><div class="b" style="height:6px;width:60%;margin-top:3px"></div></div></div>
+        </div>
+        <div class="cap">[SCREENSHOT PLACEHOLDER — parcel map]</div>
+      </div>
+    </div>
+    <div style="position:relative;z-index:1;padding:50px 20px 30px">
+      <h2 id="m2-title" class="disp" style="font-size:34px;line-height:.98">System Analizy Uwarunkowań Działki</h2>
+      <p style="font-size:18px;line-height:1.45;font-weight:600;margin-top:16px">Spatial / Investment Parcel Analysis Platform</p>
+    </div>
+
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Overview</h3></div>
+      <div style="padding:28px 20px 30px">
+        <p class="lead">A web application that automatically analyses the investment and planning context of a land parcel, using GIS and Polish spatial-planning datasets.</p>
+        <h4 class="lbl" style="margin:26px 0 10px">Analysis areas</h4>
+        <ul class="tl"><li>Local spatial plans (MPZP)</li><li>General plans (POG)</li><li>OUZ and related planning data</li><li>Flood-risk data</li><li>Protected areas</li><li>Terrain / elevation</li><li>Infrastructure context</li><li>Map layers</li></ul>
+        <dl style="margin-top:22px">
+          <div class="fact"><dt class="lbl mute">My role</dt><dd><span class="ph">[TO BE FILLED — scope of my contribution]</span></dd></div>
+          <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Source</dt><dd>Private repository</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Highlights</h3></div>
+      <div style="padding:26px 20px 30px">
+        <ol>
+          <li class="hl" style="border-top:0;padding-top:0"><span class="hm"></span><div><p class="ht">Vector tiles straight from PostGIS</p><p class="hd">Mapbox Vector Tiles generated from PostGIS; WMS previews are proxied with tile caching; coordinate transformations handled explicitly.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Provenance and data quality</p><p class="hd">Explicit provenance, quality and freshness states, and a clear difference between missing data and a confirmed absence of a restriction.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Deterministic, reproducible reports</p><p class="hd">PDF reports built from immutable analysis snapshots, plus audit ZIP exports with hashes.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">MPZP extraction research</p><p style="margin:4px 0 2px"><span class="tag">Experimental R&amp;D</span></p><p class="hd">Exploring deterministic plus LLM-assisted extraction from MPZP documents. A research track, not a finished feature of the platform.</p></div></li>
+        </ol>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Technologies</h3></div>
+      <div style="padding:26px 20px 30px">
+        <p class="lbl">Backend</p><p class="tg">Python · FastAPI · SQLAlchemy · GeoAlchemy</p>
+        <p class="lbl" style="margin-top:18px">Frontend &amp; maps</p><p class="tg">Next.js 16 · React 19 · TypeScript · MapLibre</p>
+        <p class="lbl" style="margin-top:18px">Spatial data &amp; infrastructure</p><p class="tg">PostgreSQL 16 · PostGIS · GIS / spatial data processing · Docker Compose</p>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Links</h3></div>
+      <div style="padding:26px 20px 34px">
+        <a class="lkm lkm-a" href="#project-02" aria-label="View parcel analysis system case study"><span>Case study</span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+        <a class="lkm" href="#project-02" aria-label="Open parcel analysis system live demo"><span>Live demo<small>dzialki.igorkadziela.dev <span class="ph">[URL TBC]</span></small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+      </div>
+    </div>
+  </article>
+
+  <!-- ---------- PROJECT 03 · PZPP · YELLOW · TEAM ---------- -->
+  <article id="project-03" aria-labelledby="m3-title" style="--acc:var(--yellow);--on:var(--ink);--soft:#FFF3DA">
+    <div class="mrow bt" style="height:230px">
+      <div></div>
+      <div style="padding:20px 20px 0"><p class="lbl">Project 03 / 03</p><p style="margin-top:6px"><span class="tag">Team project</span></p></div>
+      <div class="numwrap" style="left:10px;bottom:-6px">
+        <span class="num" style="font-size:240px">03</span>
+      </div>
+    </div>
+    <div class="mrow" style="height:250px;z-index:1">
+      <div aria-hidden="true" style="background:var(--yellow)"></div>
+      <div style="position:relative">
+        <div class="shot" role="img" aria-label="Placeholder for a PZPP platform screenshot — to be added" style="position:absolute;left:-20px;top:26px;width:334px;height:244px;z-index:2">
+          <div class="in" style="padding:12px 12px 44px">
+            <div class="b" style="height:16px;margin-bottom:10px"></div>
+            <div style="display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px">
+              <div><div class="b" style="height:20px;margin-bottom:6px"></div><div class="b" style="height:20px;margin-bottom:6px"></div><div class="h" style="height:20px;margin-bottom:6px"></div><div class="b" style="height:20px"></div></div>
+              <div style="background:#fff;border:1px solid #CBD2DC;padding:12px"><div class="h" style="height:58px;margin-bottom:10px"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div class="b" style="height:44px"></div><div class="b" style="height:44px"></div><div class="b" style="height:44px"></div></div></div>
+            </div>
+          </div>
+          <div class="cap">[SCREENSHOT PLACEHOLDER — PZPP]</div>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;z-index:1;padding:50px 20px 30px">
+      <h2 id="m3-title" class="disp" style="font-size:120px">PZPP</h2>
+      <p style="font-size:18px;line-height:1.45;font-weight:500;margin-top:16px">Creator / online-course SaaS platform, built by a team.</p>
+    </div>
+
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">The product</h3></div>
+      <div style="padding:28px 20px 30px">
+        <p style="margin-bottom:12px"><span class="tag">Team work</span></p>
+        <p class="lead">A creator / online-course SaaS platform combining course delivery, landing-page creation, CRM, sales workflows and student management.</p>
+        <h4 class="lbl" style="margin:26px 0 10px">Product scope (whole team)</h4>
+        <ul class="tl"><li>Course and lesson management</li><li>Student portal</li><li>Landing-page builder</li><li>Stripe checkout and enrollments</li><li>CRM / leads and sales funnels</li><li>Messaging, calendars, notifications</li><li>Documents</li></ul>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">My contributions</h3></div>
+      <div style="padding:28px 20px 30px">
+        <p style="margin-bottom:6px"><span class="tag tag-y">My contributions</span></p>
+        <ol>
+          <li class="hl" style="border-top:0"><span class="hm"></span><div><p class="ht">Payments and sales flow</p><p class="hd">Stripe checkout, post-payment provisioning and the course sales flow.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Landing-page builder</p><p class="hd">The GrapesJS-based landing-page builder.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">Course and learning experience</p><p class="hd">Course, module and lesson management; the student lesson experience, progress and quizzes.</p></div></li>
+          <li class="hl"><span class="hm"></span><div><p class="ht">CRM and integrations</p><p class="hd">CRM and messaging features, notifications, calendar and external-integration sync, document and e-signature workflows.</p></div></li>
+        </ol>
+        <p class="hd" style="border-top:1px solid var(--line);padding-top:14px">Also: Prisma / database changes, build and TypeScript fixes. Other contributors’ work is not claimed here.</p>
+        <dl style="margin-top:18px">
+          <div class="fact"><dt class="lbl mute">My role</dt><dd>Contributor in a team project</dd></div>
+          <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Source</dt><dd><span class="ph">[REPOSITORY LINK — ADD ONLY IF PUBLIC]</span></dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Technologies</h3></div>
+      <div style="padding:26px 20px 30px">
+        <p class="lbl">Frontend</p><p class="tg">Next.js 16 · React 19 · JavaScript / TypeScript · Tailwind · React Query</p>
+        <p class="lbl" style="margin-top:18px">Platform &amp; data</p><p class="tg">Prisma · PostgreSQL · NextAuth · Email tooling</p>
+        <p class="lbl" style="margin-top:18px">Product integrations &amp; tests</p><p class="tg">Stripe · OAuth integrations · GrapesJS · Vitest</p>
+      </div>
+    </div>
+    <div class="mrow bt">
+      <div class="rail"><h3 class="vt lbl mute">Links</h3></div>
+      <div style="padding:26px 20px 34px">
+        <a class="lkm lkm-a" href="#project-03" aria-label="View PZPP case study"><span>Case study</span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+        <a class="lkm" href="#project-03" aria-label="Open PZPP live demo"><span>Live demo<small>pzpp.igorkadziela.dev <span class="ph">[URL TBC]</span></small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+        <a class="lkm" href="#project-03" aria-label="View PZPP source code"><span>Source<small><span class="ph">[ONLY IF PUBLIC]</span></small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ============ 6. ENGINEERING STACK ============ -->
+<section id="stack" aria-labelledby="stack-h">
+  <div class="mrow bt">
+    <div class="rail"><span class="vt lbl mute" aria-hidden="true">By role</span></div>
+    <div style="padding:36px 20px 28px">
+      <h2 id="stack-h" class="disp" style="font-size:40px">Engineering<br>stack</h2>
+      <p style="font-size:16px;line-height:1.5;margin-top:14px">Technologies grouped by their role in a system. Squares mark which projects use each one.</p>
+      <ul style="margin-top:14px;font-size:13px;font-weight:600;display:grid;gap:6px">
+        <li><i class="mk mk-b" style="margin:0 8px 0 0"></i>01 ResearchHub</li>
+        <li><i class="mk mk-r" style="margin:0 8px 0 0"></i>02 Parcel analysis</li>
+        <li><i class="mk mk-y" style="margin:0 8px 0 0"></i>03 PZPP</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mrow bt" style="min-height:150px">
+    <div class="rail"><h3 class="vt lbl">Backend</h3></div>
+    <div style="padding:26px 20px 28px"><ul class="tech">
+      <li>Java<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Spring Boot<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Python<i class="mk mk-b"></i><i class="mk mk-r"></i><span class="sr"> (used in ResearchHub, Parcel analysis)</span></li>
+      <li>FastAPI<i class="mk mk-b"></i><i class="mk mk-r"></i><span class="sr"> (used in ResearchHub, Parcel analysis)</span></li>
+      <li>REST APIs</li>
+    </ul></div>
+  </div>
+  <div class="mrow bt" style="min-height:150px">
+    <div class="rail"><h3 class="vt lbl">Frontend</h3></div>
+    <div style="padding:26px 20px 28px"><ul class="tech">
+      <li>TypeScript<i class="mk mk-b"></i><i class="mk mk-r"></i><i class="mk mk-y"></i><span class="sr"> (used in all three projects)</span></li>
+      <li>JavaScript<i class="mk mk-y"></i><span class="sr"> (used in PZPP)</span></li>
+      <li>React<i class="mk mk-b"></i><i class="mk mk-r"></i><i class="mk mk-y"></i><span class="sr"> (used in all three projects)</span></li>
+      <li>Next.js<i class="mk mk-r"></i><i class="mk mk-y"></i><span class="sr"> (used in Parcel analysis, PZPP)</span></li>
+    </ul></div>
+  </div>
+  <div class="mrow bt" style="min-height:150px">
+    <div class="rail"><h3 class="vt lbl">Data</h3></div>
+    <div style="padding:26px 20px 28px"><ul class="tech">
+      <li>PostgreSQL<i class="mk mk-b"></i><i class="mk mk-r"></i><i class="mk mk-y"></i><span class="sr"> (used in all three projects)</span></li>
+      <li>PostGIS<i class="mk mk-r"></i><span class="sr"> (used in Parcel analysis)</span></li>
+      <li>pgvector<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Prisma<i class="mk mk-y"></i><span class="sr"> (used in PZPP)</span></li>
+      <li>SQLAlchemy<i class="mk mk-r"></i><span class="sr"> (used in Parcel analysis)</span></li>
+    </ul></div>
+  </div>
+  <div class="mrow bt" style="min-height:230px">
+    <div class="rail"><h3 class="vt lbl">AI / data systems</h3></div>
+    <div style="padding:26px 20px 28px"><ul class="tech">
+      <li>RAG<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Embeddings<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Provenance<i class="mk mk-b"></i><i class="mk mk-r"></i><span class="sr"> (used in ResearchHub, Parcel analysis)</span></li>
+      <li>Source-grounded generation<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+      <li>Structured AI workflows<i class="mk mk-b"></i><span class="sr"> (used in ResearchHub)</span></li>
+    </ul></div>
+  </div>
+  <div class="mrow bt" style="min-height:190px">
+    <div class="rail"><h3 class="vt lbl">Engineering</h3></div>
+    <div style="padding:26px 20px 28px"><ul class="tech">
+      <li>Docker<i class="mk mk-b"></i><i class="mk mk-r"></i><span class="sr"> (used in ResearchHub, Parcel analysis)</span></li>
+      <li>Git / GitHub</li>
+      <li>CI</li>
+      <li>Testing<i class="mk mk-b"></i><i class="mk mk-y"></i><span class="sr"> (used in ResearchHub, PZPP)</span></li>
+      <li>Architecture documentation</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ============ 7. ABOUT ============ -->
+<section id="about" aria-labelledby="about-h">
+  <div class="mrow bt">
+    <div class="rail"><span class="vt lbl mute" aria-hidden="true">Profile</span></div>
+    <div style="padding:36px 20px 30px">
+      <h2 id="about-h" class="disp" style="font-size:40px">About</h2>
+      <p class="lead" style="font-size:17px;margin-top:18px">My work sits where backend architecture, data and the interface have to agree. ResearchHub ties AI answers to the sources they came from. The parcel-analysis platform separates missing data from a confirmed absence of a restriction. In PZPP, a team project, I worked on payments, lessons, CRM and the landing-page builder.</p>
+    </div>
+  </div>
+  <div class="mrow bt">
+    <div class="rail"><h3 class="vt lbl mute">What I work on</h3></div>
+    <div style="padding:26px 20px 30px">
+      <ul class="tl">
+        <li><strong>Full-stack systems</strong><br><span class="hd" style="margin:0">From database schema to interface, inside one product.</span></li>
+        <li><strong>Backend architecture</strong><br><span class="hd" style="margin:0">Clear boundaries between services, workers and domains.</span></li>
+        <li><strong>Data-heavy applications</strong><br><span class="hd" style="margin:0">PostgreSQL, PostGIS and spatial processing.</span></li>
+        <li><strong>AI grounded in real data</strong><br><span class="hd" style="margin:0">RAG with citations back to source chunks.</span></li>
+        <li><strong>Reproducibility and provenance</strong><br><span class="hd" style="margin:0">Immutable snapshots, hashed audit exports.</span></li>
+        <li><strong>Databases</strong><br><span class="hd" style="margin:0">PostgreSQL, pgvector, PostGIS, Prisma, SQLAlchemy.</span></li>
+        <li><strong>Developer quality practices</strong><br><span class="hd" style="margin:0">Automated tests, coverage gates, architecture documentation.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mrow bt">
+    <div style="position:relative"><div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:56px;background:var(--yellow)"></div><div class="rail"><h3 class="vt lbl mute">Details</h3></div></div>
+    <div style="padding:26px 20px 30px">
+      <dl>
+        <div class="fact" style="border-top:0;padding-top:0"><dt class="lbl mute">Education</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+        <div class="fact"><dt class="lbl mute">Current status</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+        <div class="fact"><dt class="lbl mute">Target role</dt><dd><span class="ph">[ROLE / INTERNSHIP / JUNIOR / FULL-TIME — TO BE FILLED]</span></dd></div>
+        <div class="fact"><dt class="lbl mute">Location</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+        <div class="fact"><dt class="lbl mute">Languages</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. RESUME ============ -->
+<section id="resume" aria-labelledby="resume-h" style="position:relative;z-index:1;background:var(--ink);color:#fff;padding:40px 20px 40px 20px">
+  <p class="lbl" style="color:#C3CAD6">PDF · HTML</p>
+  <h2 id="resume-h" class="disp" style="font-size:64px;margin-top:20px">Resume</h2>
+  <p style="font-size:17px;line-height:1.5;margin-top:18px;color:#E6EAF0">The same facts as this site, as a downloadable PDF and as a plain HTML page for quick reading and parsing.</p>
+  <div style="margin-top:26px;display:grid;gap:12px">
+    <a class="btn btn-blue" href="#resume" aria-label="Download CV as PDF"><span>Download CV (PDF)</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M8 2v10M3 8l5 5 5-5"/></svg></a>
+    <a class="btn btn-inv" href="#resume" aria-label="Open the HTML resume at slash resume"><span>HTML resume /resume</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M2 8h11M8 3l5 5-5 5"/></svg></a>
+  </div>
+  <p style="margin-top:16px"><span class="ph" style="color:#E6EAF0;border-color:#8D96A6">[CV PDF — FILE TO BE ADDED]</span></p>
+</section>
+
+<!-- ============ 9. CONTACT ============ -->
+<section id="contact" aria-labelledby="contact-h">
+  <div class="mrow bt">
+    <div class="rail"><span class="vt lbl mute" aria-hidden="true">Get in touch</span></div>
+    <div style="padding:36px 20px 30px">
+      <h2 id="contact-h" class="disp" style="font-size:40px">Contact</h2>
+      <p class="lbl" style="margin-top:22px">Open to</p>
+      <p style="margin-top:8px"><span class="ph">[ROLE / INTERNSHIP / JUNIOR / FULL-TIME — TO BE FILLED]</span></p>
+      <ul style="margin-top:26px">
+        <li><a class="mcta" href="#contact" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 0"><span>Email</span><span class="ph">[EMAIL ADDRESS — TO BE FILLED]</span></a></li>
+        <li><a class="mcta" href="#contact" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 0"><span>LinkedIn</span><span class="ph">[PROFILE URL — TO BE FILLED]</span></a></li>
+        <li><a class="mcta mcta-last" href="#contact" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 0"><span>GitHub</span><span class="ph">[PROFILE URL — TO BE FILLED]</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position:relative;z-index:1;display:flex;height:56px"><span style="flex:1;background:var(--blue)"></span><span style="flex:1;background:var(--red)"></span><span style="flex:1;background:var(--yellow)"></span></div>
+</section>
+</main>
+
+<!-- ============ 10. FOOTER ============ -->
+<footer style="position:relative;z-index:1;padding:28px 20px 40px;border-top:1px solid var(--line);background:#fff">
+  <p class="lbl" style="font-size:11px">© 2026 Igor Kadziela</p>
+  <p style="font-size:14px;color:var(--mute);margin-top:6px">igorkadziela.dev · Software Engineer / Full-Stack Engineer</p>
+  <nav aria-label="Footer" style="margin-top:18px"><ul class="lbl" style="display:flex;flex-wrap:wrap;gap:6px 22px"><li><a href="#projects" style="display:inline-block;padding:10px 0">Projects</a></li><li><a href="#about" style="display:inline-block;padding:10px 0">About</a></li><li><a href="#stack" style="display:inline-block;padding:10px 0">Stack</a></li><li><a href="#resume" style="display:inline-block;padding:10px 0">Resume</a></li><li><a href="#contact" style="display:inline-block;padding:10px 0">Contact</a></li></ul></nav>
+  <a href="#top" class="lbl" style="display:inline-flex;align-items:center;gap:10px;margin-top:10px;padding:12px 0">Back to top <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M8 14V3M3 8l5-5 5 5"/></svg></a>
+</footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":13600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const open = !!(this.state && this.state.open);
+    return {
+      open,
+      closed: !open,
+      menuLabel: open ? 'Close' : 'Menu',
+      toggle: () => this.setState({ open: !open }),
+      close: () => this.setState({ open: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

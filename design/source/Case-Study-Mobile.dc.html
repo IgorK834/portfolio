@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResearchHub case study — Igor Kadziela (mobile)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=League+Spartan:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2369F5;--red:#FE3D3C;--yellow:#FFB523;--paper:#FFFFFF;--ink:#17191D;--line:#D7DEE7;--bg:#C8CFD8;--mute:#555C69;--body:#343A46}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul,ol,dl,dd,dt,figure,button{margin:0;padding:0}
+ul,ol{list-style:none}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 6px #fff}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-80px;background:var(--ink);color:#fff;padding:12px 16px;font-weight:700;z-index:60}
+.skip:focus{top:12px}
+
+.site{position:relative;max-width:430px;margin:0 auto;background:var(--paper);overflow-x:clip}
+.gl{position:absolute;top:0;bottom:0;left:56px;width:1px;background:var(--line);z-index:0;pointer-events:none}
+.mrow{position:relative;z-index:1;display:grid;grid-template-columns:56px minmax(0,1fr)}
+.mrow>*{min-width:0}
+.bt{border-top:1px solid var(--line)}
+.rail{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:30px}
+.rail .n{font-family:'League Spartan',sans-serif;font-weight:900;font-size:22px;line-height:1}
+.rail .bar{display:block;width:22px;height:5px;background:var(--acc)}
+.vt{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+
+.disp{font-family:'League Spartan','Futura','Century Gothic',sans-serif;font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:.005em}
+.lbl{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;line-height:1.4}
+.mute{color:var(--mute)}
+.ph{display:inline-block;max-width:100%;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;color:#4B5261;border:1px dashed #8D96A6;padding:1px 5px}
+.tag{display:inline-block;background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;line-height:1.4}
+
+.menu-btn{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;background:none;border:0;font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);cursor:pointer}
+.mi{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;min-height:76px;border-top:1px solid var(--line);color:var(--ink);transition:color .2s}
+.mi::before{content:'';position:absolute;inset:0;background:var(--h);transform:scaleX(0);transform-origin:left;transition:transform .28s ease;z-index:-1}
+.mi:hover::before,.mi:focus-visible::before,.mi:active::before{transform:scaleX(1)}
+.mi:hover,.mi:focus-visible,.mi:active{color:var(--hi)}
+
+.mcta{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.nx{position:relative;isolation:isolate;overflow:hidden;color:var(--ink);transition:color .2s}
+.nx::before{content:'';position:absolute;inset:0;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .3s ease;z-index:-1}
+.nx:hover::before,.nx:focus-visible::before,.nx:active::before{transform:scaleX(1)}
+.nx:hover,.nx:focus-visible,.nx:active{color:#fff}
+
+.numwrap{position:absolute;z-index:3}
+.num{position:relative;display:block;font-family:'League Spartan','Futura',sans-serif;font-weight:900;line-height:.76;letter-spacing:-.03em;color:var(--ink)}
+.sq{position:absolute;left:4px;bottom:12px;width:78px;height:78px}
+.fact{padding:13px 0;border-top:1px solid var(--line)}
+.fact dd{margin:4px 0 0;font-size:15px;font-weight:600;line-height:1.4}
+.lead{font-size:18px;line-height:1.5;font-weight:500}
+.p{font-size:16px;line-height:1.6;color:var(--body)}
+.hl{display:grid;grid-template-columns:22px minmax(0,1fr);padding:15px 0;border-top:1px solid var(--line)}
+.hm{width:10px;height:10px;background:var(--acc);margin-top:6px}
+.ht{font-size:15px;font-weight:700;line-height:1.35}
+.hd{font-size:14.5px;line-height:1.5;color:var(--body);margin-top:3px}
+.tl li{padding:6px 0;border-top:1px solid var(--line);font-size:15px;font-weight:500}
+.tl li:last-child{border-bottom:1px solid var(--line)}
+.lkm{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:10px 16px;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:2px solid var(--ink);margin-bottom:12px}
+.lkm small{display:block;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;font-weight:400;letter-spacing:0;text-transform:none;line-height:1.45;margin-top:2px}
+.lkm-a{background:var(--acc);border-color:var(--acc);color:var(--on)}
+
+.shot{overflow:hidden;background:#EDF0F4;border:1px solid #CBD2DC;box-shadow:0 18px 36px -24px rgba(23,25,29,.55);transition:background .3s}
+.shot:active{background:var(--soft)}
+.shot .in{position:absolute;inset:0}
+.shot .b{background:#CDD3DC}
+.shot .h{background:#8F98A8;transition:background .25s}
+.shot:active .h{background:var(--acc)}
+.shot .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;background:#fff;border-top:1px solid #CBD2DC;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;line-height:1.3;color:#4B5261}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</helmet>
+
+<div id="top">
+<a class="skip" href="#main">Skip to content</a>
+<div class="site" style="--acc:{{ acc }};--on:{{ on }};--soft:{{ soft }}">
+<div class="gl" aria-hidden="true"></div>
+
+<header class="mrow" style="height:64px;border-bottom:1px solid var(--line)">
+  <a href="Home-Mobile.dc.html" aria-label="Igor Kadziela — home" style="display:flex;align-items:center;justify-content:center">
+    <span class="disp" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:var(--ink);color:#fff;font-size:18px;line-height:1">IK</span>
+  </a>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 20px">
+    <span class="lbl" style="font-size:11px">Igor Kadziela</span>
+    <button type="button" class="menu-btn" onClick="{{ toggle }}" aria-expanded="{{ open }}" aria-controls="m-menu">
+      <sc-if value="{{ closed }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M2 5h18M2 11h18M2 17h18"/></svg></sc-if>
+      <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 4l14 14M18 4L4 18"/></svg></sc-if>
+      <span>{{ menuLabel }}</span>
+    </button>
+  </div>
+</header>
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+<nav id="m-menu" aria-label="Primary" style="position:absolute;left:0;right:0;top:64px;z-index:40;background:#fff;border-bottom:2px solid var(--ink);box-shadow:0 34px 40px -24px rgba(23,25,29,.4)">
+  <ul>
+    <li><a class="mi" href="Home-Mobile.dc.html" onClick="{{ close }}" style="--h:var(--blue);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">01</span><span class="disp" style="font-size:34px">Projects</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="Home-Mobile.dc.html" onClick="{{ close }}" style="--h:var(--red);--hi:var(--ink)"><span class="disp" style="font-size:20px;text-align:center">02</span><span class="disp" style="font-size:34px">About</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="Home-Mobile.dc.html" onClick="{{ close }}" style="--h:var(--yellow);--hi:var(--ink)"><span class="disp" style="font-size:20px;text-align:center">03</span><span class="disp" style="font-size:34px">Stack</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="Home-Mobile.dc.html" onClick="{{ close }}" style="--h:var(--ink);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">04</span><span class="disp" style="font-size:34px">Resume</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+    <li><a class="mi" href="Home-Mobile.dc.html" onClick="{{ close }}" style="--h:var(--blue);--hi:#fff"><span class="disp" style="font-size:20px;text-align:center">05</span><span class="disp" style="font-size:34px">Contact</span><svg style="justify-self:center" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a></li>
+  </ul>
+</nav>
+</sc-if>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<nav aria-label="Breadcrumb" class="mrow" style="height:56px">
+  <div></div>
+  <ol class="lbl" style="display:flex;gap:10px;align-items:center;padding:0 20px"><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:12px 0">Projects</a></li><li aria-hidden="true">/</li><li aria-current="page">ResearchHub</li></ol>
+</nav>
+
+<div class="mrow bt" style="height:230px">
+  <div></div>
+  <div style="padding:20px 20px 0"><p class="lbl">Case study · 01 / 03</p><p style="margin-top:6px"><span class="tag">Template</span></p></div>
+  <div class="numwrap" style="left:10px;bottom:-6px">
+    <span class="sq" style="background:var(--acc)"></span>
+    <span class="num" style="font-size:240px">01</span>
+  </div>
+</div>
+<div style="position:relative;z-index:1;height:250px;background:var(--acc)">
+  <div class="shot" role="img" aria-label="Placeholder for a ResearchHub workspace screenshot — to be added" style="position:absolute;left:36px;top:26px;width:334px;height:244px;z-index:2">
+    <div class="in" style="display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:12px 12px 44px">
+      <div><div class="b" style="height:7px;width:55%;margin-bottom:10px"></div><div class="b" style="height:22px;margin-bottom:6px"></div><div class="h" style="height:22px;margin-bottom:6px"></div><div class="b" style="height:22px;margin-bottom:6px"></div><div class="b" style="height:22px"></div></div>
+      <div style="background:#fff;border:1px solid #CBD2DC;padding:14px"><div class="h" style="height:11px;width:46%;margin-bottom:14px"></div><div class="b" style="height:6px;margin-bottom:8px"></div><div class="b" style="height:6px;width:92%;margin-bottom:8px"></div><div class="h" style="height:6px;width:76%;margin-bottom:8px"></div><div class="b" style="height:6px;width:86%;margin-bottom:8px"></div><div class="b" style="height:6px"></div></div>
+    </div>
+    <div class="cap">[SCREENSHOT PLACEHOLDER — hero image]</div>
+  </div>
+</div>
+<div style="position:relative;z-index:1;padding:50px 20px 28px">
+  <h1 class="disp" style="font-size:42px;white-space:nowrap">ResearchHub<span class="sr"> — case study</span></h1>
+  <p style="font-size:18px;line-height:1.45;font-weight:500;margin-top:16px">Source-grounded collaborative AI workspace for students and researchers.</p>
+  <p style="margin-top:16px"><span class="ph">[TEMPLATE — COPY DRAFTED FROM THE PROJECT BRIEF; REVIEW BEFORE PUBLISHING]</span></p>
+</div>
+<div class="mrow bt">
+  <div class="rail"><span class="vt lbl mute" aria-hidden="true">At a glance</span></div>
+  <div style="padding:26px 20px 30px">
+    <dl>
+      <div class="fact" style="border-top:0;padding-top:0"><dt class="lbl mute">Status</dt><dd>Active development</dd></div>
+      <div class="fact"><dt class="lbl mute">My role</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      <div class="fact"><dt class="lbl mute">Repository</dt><dd>Private</dd></div>
+      <div class="fact"><dt class="lbl mute">Live demo</dt><dd>researchhub.igorkadziela.dev<br><span class="ph" style="font-size:10.5px">[URL TO BE CONFIRMED]</span></dd></div>
+      <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Canonical URL (planned)</dt><dd style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:400;word-break:break-all">igorkadziela.dev/projects/researchhub</dd></div>
+    </dl>
+  </div>
+</div>
+
+<!-- ============ 01 ============ -->
+<section id="s01" aria-labelledby="s01-h" class="mrow bt">
+  <div class="rail"><span class="n">01</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s01-h" class="disp" style="font-size:30px;margin-bottom:18px">Project overview</h2>
+    <p class="lead">A collaborative research environment where teams work with PDFs, DOCX files, spreadsheets and datasets, write shared reports, ask source-grounded AI questions, generate cited content and run reproducible data analyses, with provenance kept back to the source material.</p>
+    <dl style="margin-top:22px">
+      <div class="fact"><dt class="lbl mute">Status</dt><dd>Active development</dd></div>
+      <div class="fact"><dt class="lbl mute">Source</dt><dd>Private repository</dd></div>
+      <div class="fact"><dt class="lbl mute">Team</dt><dd><span class="ph">[SOLO / TEAM — TO BE FILLED]</span></dd></div>
+      <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Timeline</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section id="s02" aria-labelledby="s02-h" class="mrow bt">
+  <div class="rail"><span class="n">02</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s02-h" class="disp" style="font-size:30px;margin-bottom:18px">Problem</h2>
+    <p class="p">Research material lives in many formats (PDFs, DOCX files, spreadsheets and datasets) while the report is written somewhere else. When an AI assistant answers without pointing back to that material, its claims cannot be checked. ResearchHub starts from the opposite premise: every generated claim should stay traceable to the source it came from.</p>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section id="s03" aria-labelledby="s03-h" class="mrow bt">
+  <div class="rail"><span class="n">03</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s03-h" class="disp" style="font-size:30px;margin-bottom:18px">Product and users</h2>
+    <p class="p" style="margin-bottom:18px"><strong style="color:var(--ink)">For:</strong> students and researchers working in teams. What the workspace lets them do:</p>
+    <ul class="tl">
+      <li>Work with PDFs, DOCX files, spreadsheets and datasets</li>
+      <li>Write shared reports together, in realtime</li>
+      <li>Ask source-grounded AI questions</li>
+      <li>Generate cited content</li>
+      <li>Run reproducible data analyses with provenance back to the source</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section id="s04" aria-labelledby="s04-h" class="mrow bt">
+  <div class="rail"><span class="n">04</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s04-h" class="disp" style="font-size:30px;margin-bottom:18px">My contribution</h2>
+    <p style="margin-bottom:14px"><span class="ph">[TO BE FILLED — state plainly what I designed, built and decided]</span></p>
+    <dl>
+      <div class="fact"><dt class="lbl mute">Backend</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      <div class="fact"><dt class="lbl mute">Frontend</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      <div class="fact"><dt class="lbl mute">AI / data worker</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Quality and delivery</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ 05 ARCHITECTURE ============ -->
+<section id="s05" aria-labelledby="s05-h" class="mrow bt">
+  <div class="rail"><span class="n">05</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s05-h" class="disp" style="font-size:30px;margin-bottom:18px">Architecture</h2>
+    <p class="p" style="margin-bottom:26px">A Spring Boot backend and an internal Python FastAPI worker with explicitly separated responsibilities, PostgreSQL with pgvector for data, and Azure Blob Storage (Azurite locally) for files. Realtime editing runs through Yjs and Hocuspocus.</p>
+
+    <div style="position:relative;width:294px;height:410px">
+      <svg width="8" height="43" viewBox="0 0 8 43" preserveAspectRatio="none" style="position:absolute;left:60px;top:84px;width:8px;height:43px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><defs><marker id="dc-arrow-head-filled-1" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 4 0 L 4 39" marker-end="url(#dc-arrow-head-filled-1)"></path></svg>
+      <svg width="8" height="43" viewBox="0 0 8 43" preserveAspectRatio="none" style="position:absolute;left:60px;top:212px;width:8px;height:43px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><defs><marker id="dc-arrow-head-filled-2" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 4 0 L 4 39" marker-end="url(#dc-arrow-head-filled-2)"></path></svg>
+      <svg width="39" height="8" viewBox="0 0 39 8" preserveAspectRatio="none" style="position:absolute;left:127px;top:24px;width:39px;height:8px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><defs><marker id="dc-arrow-head-filled-3" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 0 4 L 35 4" marker-end="url(#dc-arrow-head-filled-3)"></path></svg>
+      <svg width="39" height="8" viewBox="0 0 39 8" preserveAspectRatio="none" style="position:absolute;left:128px;top:52px;width:39px;height:8px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><defs><marker id="dc-arrow-head-filled-4" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 39 4 L 4 4" marker-end="url(#dc-arrow-head-filled-4)"></path></svg>
+      <svg width="39" height="8" viewBox="0 0 39 8" preserveAspectRatio="none" style="position:absolute;left:127px;top:166px;width:39px;height:8px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><defs><marker id="dc-arrow-head-filled-5" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 0 4 L 35 4" marker-end="url(#dc-arrow-head-filled-5)"></path></svg>
+      <svg width="8" height="43" viewBox="0 0 8 43" preserveAspectRatio="none" style="position:absolute;left:226px;top:212px;width:8px;height:43px;overflow:visible;fill:none;stroke:#17191D;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 6"><defs><marker id="dc-arrow-head-filled-6" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#17191D" stroke="none" style="stroke:none;fill:#17191D;fill:context-stroke"/></marker></defs><path d="M 4 0 L 4 39" marker-end="url(#dc-arrow-head-filled-6)"></path></svg>
+
+      <div style="position:absolute;left:0;top:0;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>Browser</b><br>React · TypeScript<br>Tiptap · Yjs</span></div>
+      <div style="position:absolute;left:167px;top:0;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>Hocuspocus</b><br>Realtime sync<br>Yjs documents</span></div>
+      <div style="position:absolute;left:0;top:128px;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>Spring Boot API</b><br>Java 25 · Boot 4.1<br>Workspace auth</span></div>
+      <div style="position:absolute;left:167px;top:128px;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>FastAPI worker</b><br>Python 3.13<br>AI · data · compute</span></div>
+      <div style="position:absolute;left:0;top:256px;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>PostgreSQL</b><br>+ pgvector<br>Data · vectors</span></div>
+      <div style="position:absolute;left:167px;top:256px;width:127px;height:84px;box-sizing:border-box;padding:8px 10px;display:flex;align-items:center;background:#ffffff;border:1px solid #17191D;border-top:5px solid var(--acc);font-size:12px;line-height:1.4"><span><b>Blob Storage</b><br>Azure / Azurite<br>File storage</span></div>
+
+      <div style="position:absolute;left:0;top:362px;width:294px;font-size:12.5px;line-height:17px;color:#555C69">Solid arrow: stated in the project brief. Dashed: to be confirmed. Schematic only.</div>
+    </div>
+
+    <p style="margin-top:22px"><span class="ph">[TO BE FILLED — exact split of responsibilities between the Spring Boot backend and the Python worker]</span></p>
+  </div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section id="s06" aria-labelledby="s06-h" class="mrow bt">
+  <div class="rail"><span class="n">06</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s06-h" class="disp" style="font-size:30px;margin-bottom:12px">Key engineering challenges</h2>
+    <ol>
+      <li class="hl"><span class="hm"></span><div><p class="ht">Keeping claims traceable</p><p class="hd">Generated text must stay linked to the exact source chunks it relies on, across versioned sources.</p></div></li>
+      <li class="hl"><span class="hm"></span><div><p class="ht">Isolated scientific computation</p><p class="hd">Reproducible analyses run in an isolated Python environment, apart from the web application.</p></div></li>
+      <li class="hl"><span class="hm"></span><div><p class="ht">Realtime collaborative editing</p><p class="hd">Shared documents built on Yjs, Hocuspocus and Tiptap / ProseMirror.</p></div></li>
+      <li class="hl" style="border-bottom:1px solid var(--line)"><span class="hm"></span><div><p class="ht">Authorization and workspace boundaries</p><p class="hd">Access to sources, documents and AI features is scoped by workspace.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section id="s07" aria-labelledby="s07-h" class="mrow bt">
+  <div class="rail"><span class="n">07</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s07-h" class="disp" style="font-size:30px;margin-bottom:12px">Decisions and trade-offs</h2>
+    <ol>
+      <li style="padding:16px 0;border-top:2px solid var(--ink)"><p class="ht">Separate Python worker from the Spring Boot backend</p><dl style="margin-top:8px"><div class="fact"><dt class="lbl mute">Why</dt><dd style="font-weight:400;color:var(--body);font-size:14.5px">Keeps AI and data processing apart from product logic, each in its own ecosystem.</dd></div><div class="fact"><dt class="lbl mute">Trade-off</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div></dl></li>
+      <li style="padding:16px 0;border-top:2px solid var(--ink)"><p class="ht">Structured model gateway with audited calls</p><dl style="margin-top:8px"><div class="fact"><dt class="lbl mute">Why</dt><dd style="font-weight:400;color:var(--body);font-size:14.5px">AI calls stay structured and inspectable.</dd></div><div class="fact"><dt class="lbl mute">Trade-off</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div></dl></li>
+      <li style="padding:16px 0;border-top:2px solid var(--ink)"><p class="ht">Versioned research sources</p><dl style="margin-top:8px"><div class="fact"><dt class="lbl mute">Why</dt><dd style="font-weight:400;color:var(--body);font-size:14.5px">Citations point at a specific version of a source.</dd></div><div class="fact"><dt class="lbl mute">Trade-off</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div></dl></li>
+      <li style="padding:16px 0;border-top:2px solid var(--ink)"><p class="ht">Isolated Python environment for computation</p><dl style="margin-top:8px"><div class="fact"><dt class="lbl mute">Why</dt><dd style="font-weight:400;color:var(--body);font-size:14.5px">Analyses can be reproduced and run apart from the application.</dd></div><div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">Trade-off</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div></dl></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 08 ============ -->
+<section id="s08" aria-labelledby="s08-h" class="mrow bt">
+  <div class="rail"><span class="n">08</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s08-h" class="disp" style="font-size:30px;margin-bottom:18px">Stack</h2>
+    <p class="lbl">Backend &amp; AI worker</p><p style="font-size:15px;font-weight:500;margin-top:4px">Java 25 · Spring Boot 4.1 · Maven · Python 3.13 · FastAPI</p>
+    <p class="lbl" style="margin-top:18px">Frontend &amp; realtime</p><p style="font-size:15px;font-weight:500;margin-top:4px">React · TypeScript · Webpack · TanStack Query · Tiptap / ProseMirror · Yjs · Hocuspocus</p>
+    <p class="lbl" style="margin-top:18px">Data &amp; infrastructure</p><p style="font-size:15px;font-weight:500;margin-top:4px">PostgreSQL · pgvector · Azure Blob Storage / Azurite · Docker</p>
+  </div>
+</section>
+
+<!-- ============ 09 ============ -->
+<section id="s09" aria-labelledby="s09-h" class="mrow bt">
+  <div class="rail"><span class="n">09</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s09-h" class="disp" style="font-size:30px;margin-bottom:18px">Testing and quality</h2>
+    <p class="p" style="margin-bottom:16px">Automated testing with coverage gates.</p>
+    <dl>
+      <div class="fact"><dt class="lbl mute">Coverage threshold</dt><dd><span class="ph">[TO BE FILLED — do not invent numbers]</span></dd></div>
+      <div class="fact"><dt class="lbl mute">Kinds of tests</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+      <div class="fact" style="border-bottom:1px solid var(--line)"><dt class="lbl mute">CI</dt><dd><span class="ph">[TO BE FILLED]</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="s10" aria-labelledby="s10-h" class="mrow bt">
+  <div class="rail"><span class="n">10</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s10-h" class="disp" style="font-size:30px;margin-bottom:18px">Screenshots</h2>
+    <figure style="margin-bottom:14px"><div class="shot" role="img" aria-label="Placeholder for a ResearchHub main workspace screenshot — to be added" style="position:relative;height:190px"><div class="in" style="padding:14px 14px 46px"><div class="b" style="height:14px;margin-bottom:10px"></div><div style="display:grid;grid-template-columns:60px minmax(0,1fr);gap:10px"><div class="b" style="height:92px"></div><div style="background:#fff;border:1px solid #CBD2DC;padding:12px;height:92px"><div class="h" style="height:10px;width:40%;margin-bottom:12px"></div><div class="b" style="height:6px;margin-bottom:8px"></div><div class="h" style="height:6px;width:70%"></div></div></div></div><div class="cap">[SCREENSHOT PLACEHOLDER — main workspace]</div></div></figure>
+    <figure style="margin-bottom:14px"><div class="shot" role="img" aria-label="Placeholder for a ResearchHub citation view screenshot — to be added" style="position:relative;height:190px"><div class="in" style="padding:14px 14px 46px"><div class="h" style="height:10px;width:40%;margin-bottom:12px"></div><div class="b" style="height:6px;margin-bottom:8px"></div><div class="b" style="height:6px;width:90%;margin-bottom:8px"></div><div class="b" style="height:40px;margin-top:12px"></div></div><div class="cap">[PLACEHOLDER — citations]</div></div></figure>
+    <figure><div class="shot" role="img" aria-label="Placeholder for a ResearchHub analysis view screenshot — to be added" style="position:relative;height:190px"><div class="in" style="padding:14px 14px 46px"><div class="h" style="height:10px;width:40%;margin-bottom:12px"></div><div class="b" style="height:76px"></div></div><div class="cap">[PLACEHOLDER — analysis]</div></div></figure>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="s11" aria-labelledby="s11-h" class="mrow bt">
+  <div class="rail"><span class="n">11</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s11-h" class="disp" style="font-size:30px;margin-bottom:18px">Demo and source</h2>
+    <a class="lkm lkm-a" href="#s11" aria-label="Open the ResearchHub live demo"><span>Live demo<small>researchhub.igorkadziela.dev <span class="ph">[URL TBC]</span></small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg></a>
+    <a class="lkm" href="#top" aria-label="Back to the top of this ResearchHub case study"><span>Case study<small>igorkadziela.dev/projects/researchhub</small></span><svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M14 25V5M6 13l8-8 8 8"/></svg></a>
+    <div class="lkm" style="border-style:dashed;border-color:#8D96A6"><span>Source<small>Private repository. No public link.</small></span></div>
+  </div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section id="s12" aria-labelledby="s12-h" class="mrow bt">
+  <div class="rail"><span class="n">12</span><span class="bar"></span></div>
+  <div style="padding:28px 20px 30px">
+    <h2 id="s12-h" class="disp" style="font-size:30px;margin-bottom:12px">What I learned</h2>
+    <ol>
+      <li class="hl"><span class="hm"></span><div><span class="ph">[LESSON 1 — TO BE FILLED]</span></div></li>
+      <li class="hl"><span class="hm"></span><div><span class="ph">[LESSON 2 — TO BE FILLED]</span></div></li>
+      <li class="hl" style="border-bottom:1px solid var(--line)"><span class="hm"></span><div><span class="ph">[LESSON 3 — TO BE FILLED]</span></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ NEXT PROJECT ============ -->
+<nav aria-label="More projects">
+  <a class="nx" href="Home-Mobile.dc.html" aria-label="Next project: System Analizy Uwarunkowań Działki" style="position:relative;z-index:1;display:block;background:var(--red);color:var(--ink);padding:30px 20px 32px;border-top:1px solid var(--line)">
+    <span class="lbl" style="display:block">Next project · 02 / 03</span>
+    <span class="disp" style="display:block;font-size:36px;line-height:.98;margin-top:34px">System Analizy Uwarunkowań Działki</span>
+    <svg style="margin-top:22px" width="36" height="36" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"/></svg>
+  </a>
+  <a class="mcta" href="Home-Mobile.dc.html" style="position:relative;z-index:1;background:#fff;padding:0 20px;min-height:60px"><span>All projects</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M2 8h11M8 3l5 5-5 5"/></svg></a>
+</nav>
+</main>
+
+<footer style="position:relative;z-index:1;padding:28px 20px 40px;border-top:1px solid var(--line);background:#fff">
+  <p class="lbl" style="font-size:11px">© 2026 Igor Kadziela</p>
+  <p style="font-size:14px;color:var(--mute);margin-top:6px">igorkadziela.dev · Software Engineer / Full-Stack Engineer</p>
+  <nav aria-label="Footer" style="margin-top:18px"><ul class="lbl" style="display:flex;flex-wrap:wrap;gap:6px 22px"><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:10px 0">Projects</a></li><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:10px 0">About</a></li><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:10px 0">Stack</a></li><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:10px 0">Resume</a></li><li><a href="Home-Mobile.dc.html" style="display:inline-block;padding:10px 0">Contact</a></li></ul></nav>
+  <a href="#top" class="lbl" style="display:inline-flex;align-items:center;gap:10px;margin-top:10px;padding:12px 0">Back to top <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M8 14V3M3 8l5-5 5 5"/></svg></a>
+</footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"enum","options":["blue","red","yellow"],"default":"blue","section":"Project accent"},"$preview":{"width":390,"height":7800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const map = {
+      blue:   { acc: '#2369F5', on: '#FFFFFF', soft: '#E7EEFE' },
+      red:    { acc: '#FE3D3C', on: '#17191D', soft: '#FFE9E8' },
+      yellow: { acc: '#FFB523', on: '#17191D', soft: '#FFF3DA' }
+    };
+    const open = !!(this.state && this.state.open);
+    return Object.assign({}, map[this.props.accent] || map.blue, {
+      open,
+      closed: !open,
+      menuLabel: open ? 'Close' : 'Menu',
+      toggle: () => this.setState({ open: !open }),
+      close: () => this.setState({ open: false })
+    });
+  }
+}
+</script>
+</body>
+</html>

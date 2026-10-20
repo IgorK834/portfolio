@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Machine-readable layer — igorkadziela.dev</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=League+Spartan:wght@700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2369F5;--red:#FE3D3C;--yellow:#FFB523;--paper:#FFFFFF;--ink:#17191D;--line:#D7DEE7;--bg:#C8CFD8;--mute:#555C69;--body:#343A46}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul,ol,dl,dd,dt,figure,table,pre{margin:0;padding:0}
+ul,ol{list-style:none}
+a{color:inherit;text-decoration:none}
+a:focus-visible{outline:3px solid var(--ink);outline-offset:3px;box-shadow:0 0 0 6px #fff}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.site{position:relative;max-width:1360px;margin:0 auto;background:var(--paper);box-shadow:0 44px 70px -44px rgba(23,25,29,.4)}
+.gl{position:absolute;top:0;bottom:0;width:1px;background:var(--line);z-index:0;pointer-events:none}
+.row{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,2.05fr) minmax(0,1fr) minmax(0,4.67fr) minmax(0,.98fr)}
+.row>*{min-width:0}
+.bt{border-top:1px solid var(--line)}
+
+.disp{font-family:'League Spartan','Futura','Century Gothic',sans-serif;font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:.005em}
+.lbl{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;line-height:1.4}
+.mute{color:var(--mute)}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.ph{display:inline-block;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4;font-weight:400;letter-spacing:0;text-transform:none;color:#4B5261;border:1px dashed #8D96A6;padding:1px 5px}
+.p{font-size:16px;line-height:1.6;color:var(--body)}
+pre{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;background:#F4F6F9;border:1px solid var(--line);border-left:6px solid var(--acc,var(--ink));padding:18px 20px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.cap{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin:26px 0 8px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:left;color:var(--mute);padding:0 18px 12px 0;border-bottom:2px solid var(--ink)}
+.tbl td{vertical-align:top;padding:13px 18px 13px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.5;color:var(--body)}
+.tbl td:first-child{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--ink);font-weight:500}
+.tree li{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;padding:5px 0;border-top:1px solid var(--line)}
+.tree li b{display:inline-block;min-width:34px;font-weight:500;color:var(--ink)}
+.tree .l2{padding-left:34px}.tree .l3{padding-left:68px;color:var(--mute)}
+.sw{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+
+<div style="padding:40px 40px 64px">
+<div class="site">
+<div class="gl" style="left:23.563%" aria-hidden="true"></div>
+<div class="gl" style="left:35.057%" aria-hidden="true"></div>
+<div class="gl" style="left:88.736%" aria-hidden="true"></div>
+
+<header class="row" style="min-height:260px">
+  <div style="padding:44px;display:flex;flex-direction:column;justify-content:space-between">
+    <span class="disp" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--ink);color:#fff;font-size:19px;line-height:1">IK</span>
+    <p class="lbl mute">Implementation notes</p>
+  </div>
+  <div></div>
+  <div style="padding:44px;display:flex;flex-direction:column;justify-content:flex-end;gap:16px">
+    <h1 class="disp" style="font-size:64px">Machine-<br>readable layer</h1>
+    <p class="p" style="max-width:560px">Routes, heading outline, metadata, JSON-LD, sitemap, robots.txt and llms.txt for igorkadziela.dev. Everything here is factual: no employers, dates, metrics or credentials. Missing facts are marked.</p>
+  </div>
+  <div style="display:flex;align-items:flex-end"><div aria-hidden="true" style="width:100%;height:72px;background:var(--yellow)"></div></div>
+</header>
+
+<main>
+
+<!-- 01 ROUTES -->
+<section aria-labelledby="r-h" class="row bt" style="--acc:var(--blue)">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">01</p><span style="display:block;width:28px;height:6px;background:var(--blue);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="r-h" class="disp" style="font-size:34px;margin-bottom:22px">Routes and canonical URLs</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">Route</th><th scope="col">Page</th></tr></thead>
+      <tbody>
+        <tr><td>/</td><td>Home: identity, selected work, three project sections, stack, about, resume CTA, contact. Canonical <span class="mono" style="font-size:12px">https://igorkadziela.dev/</span></td></tr>
+        <tr><td>/projects/researchhub</td><td>Case study 01. One indexable URL per project.</td></tr>
+        <tr><td>/projects/parcel-analysis</td><td>Case study 02. English slug; page title carries both the Polish name and the English descriptor.</td></tr>
+        <tr><td>/projects/pzpp</td><td>Case study 03. Labelled as a team project; “My contributions” section.</td></tr>
+        <tr><td>/resume</td><td>HTML resume with the same recruiter-relevant facts as the PDF.</td></tr>
+        <tr><td>/cv/igor-kadziela-cv.pdf</td><td>Direct PDF download. <span class="ph">[FILE TO BE ADDED]</span></td></tr>
+        <tr><td>/sitemap.xml · /robots.txt · /llms.txt</td><td>Machine-facing files, below.</td></tr>
+        <tr><td>researchhub. / dzialki. / pzpp.igorkadziela.dev</td><td>Planned demo subdomains. Link them only after they exist.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+</section>
+
+<!-- 02 OUTLINE -->
+<section aria-labelledby="o-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">02</p><span style="display:block;width:28px;height:6px;background:var(--red);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="o-h" class="disp" style="font-size:34px;margin-bottom:12px">Landmarks and heading outline (home)</h2>
+    <p class="p" style="margin-bottom:22px;max-width:600px">Landmarks: <span class="mono" style="font-size:12.5px">header › nav · main › section / article · footer › nav</span>. One H1; each project is an <span class="mono" style="font-size:12.5px">article</span> with its own H2. All copy is real text in the DOM, none of it behind interaction.</p>
+    <ul class="tree">
+      <li><b>H1</b>Igor Kadziela <span class="mute">(visually hidden suffix: Software Engineer / Full-Stack Engineer)</span></li>
+      <li class="l2"><b>H2</b>Selected work <span class="mute">— index; project names as H3 links</span></li>
+      <li class="l2"><b>H2</b>ResearchHub <span class="mute">(article #project-01)</span></li>
+      <li class="l3"><b>H3</b>Engineering highlights · Technologies</li>
+      <li class="l2"><b>H2</b>System Analizy Uwarunkowań Działki <span class="mute">(article #project-02)</span></li>
+      <li class="l3"><b>H3</b>Analysis areas · Engineering highlights · Technologies</li>
+      <li class="l2"><b>H2</b>PZPP <span class="mute">(article #project-03, team project)</span></li>
+      <li class="l3"><b>H3</b>Product scope (whole team) · My contributions · Technologies</li>
+      <li class="l2"><b>H2</b>Engineering stack</li>
+      <li class="l3"><b>H3</b>Backend · Frontend · Data · AI / data systems · Engineering</li>
+      <li class="l2"><b>H2</b>About <span class="mute">› H3 What I work on · Profile details</span></li>
+      <li class="l2"><b>H2</b>Resume</li>
+      <li class="l2" style="border-bottom:1px solid var(--line)"><b>H2</b>Contact</li>
+    </ul>
+  </div>
+  <div></div>
+</section>
+
+<!-- 03 METADATA -->
+<section aria-labelledby="m-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">03</p><span style="display:block;width:28px;height:6px;background:var(--yellow);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="m-h" class="disp" style="font-size:34px;margin-bottom:6px">Metadata</h2>
+    <p class="cap">Home</p>
+<pre>&lt;title&gt;Igor Kadziela — Software Engineer / Full-Stack Engineer&lt;/title&gt;
+&lt;meta name="description" content="Full-stack engineer: Java / Spring Boot, TypeScript / Next.js, Python / FastAPI, PostgreSQL / PostGIS, source-grounded AI. Projects: ResearchHub, parcel analysis, PZPP."&gt;
+&lt;link rel="canonical" href="https://igorkadziela.dev/"&gt;
+&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:title" content="Igor Kadziela — Software Engineer / Full-Stack Engineer"&gt;
+&lt;meta property="og:description" content="(same as description)"&gt;
+&lt;meta property="og:url" content="https://igorkadziela.dev/"&gt;
+&lt;meta property="og:image" content="[1200×630 IMAGE — TO BE ADDED]"&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;</pre>
+    <p class="cap">Project page (ResearchHub)</p>
+<pre>&lt;title&gt;ResearchHub — source-grounded AI workspace · Igor Kadziela&lt;/title&gt;
+&lt;meta name="description" content="Case study: ResearchHub, a source-grounded collaborative AI workspace with citations and provenance. Spring Boot backend, Python FastAPI worker. Active development."&gt;
+&lt;link rel="canonical" href="https://igorkadziela.dev/projects/researchhub"&gt;
+&lt;meta property="og:type" content="article"&gt;
+&lt;meta property="og:url" content="https://igorkadziela.dev/projects/researchhub"&gt;
+&lt;meta name="twitter:card" content="summary_large_image"&gt;</pre>
+  </div>
+  <div></div>
+</section>
+
+<!-- 04 JSON-LD -->
+<section aria-labelledby="j-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">04</p><span style="display:block;width:28px;height:6px;background:var(--blue);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="j-h" class="disp" style="font-size:34px;margin-bottom:6px">Structured data (JSON-LD)</h2>
+    <p class="cap">Home — Person, WebSite, ItemList</p>
+<pre>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://igorkadziela.dev/#person",
+      "name": "Igor Kadziela",
+      "jobTitle": "Software Engineer / Full-Stack Engineer",
+      "url": "https://igorkadziela.dev/",
+      "knowsAbout": ["Java", "Spring Boot", "TypeScript", "React", "Next.js",
+        "Python", "FastAPI", "PostgreSQL", "PostGIS", "pgvector",
+        "Retrieval-augmented generation", "Docker"],
+      "sameAs": []
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://igorkadziela.dev/#website",
+      "url": "https://igorkadziela.dev/",
+      "name": "Igor Kadziela",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://igorkadziela.dev/#person" }
+    },
+    {
+      "@type": "ItemList",
+      "name": "Selected work",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "ResearchHub",
+          "url": "https://igorkadziela.dev/projects/researchhub" },
+        { "@type": "ListItem", "position": 2, "name": "System Analizy Uwarunkowań Działki",
+          "url": "https://igorkadziela.dev/projects/parcel-analysis" },
+        { "@type": "ListItem", "position": 3, "name": "PZPP",
+          "url": "https://igorkadziela.dev/projects/pzpp" }
+      ]
+    }
+  ]
+}
+&lt;/script&gt;</pre>
+    <p class="p" style="margin-top:12px;font-size:14px"><span class="ph">[sameAs: add GitHub and LinkedIn URLs only once they exist]</span></p>
+
+    <p class="cap">Project pages — SoftwareApplication</p>
+<pre>{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ResearchHub",
+  "description": "Source-grounded collaborative AI workspace for students and researchers. Active development.",
+  "applicationCategory": "WebApplication",
+  "url": "https://igorkadziela.dev/projects/researchhub"
+}
+
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PZPP",
+  "description": "Creator / online-course SaaS platform. Team project.",
+  "applicationCategory": "WebApplication",
+  "url": "https://igorkadziela.dev/projects/pzpp",
+  "contributor": { "@id": "https://igorkadziela.dev/#person" }
+}</pre>
+    <p class="p" style="margin-top:12px;font-size:14px">Parcel analysis follows the same shape, with <span class="mono" style="font-size:12.5px">alternateName</span> “Spatial / Investment Parcel Analysis Platform”. Add <span class="mono" style="font-size:12.5px">author</span> to projects 01 and 02 only after the role is confirmed. PZPP uses <span class="mono" style="font-size:12.5px">contributor</span>, never <span class="mono" style="font-size:12.5px">author</span>. Use <span class="mono" style="font-size:12.5px">SoftwareSourceCode</span> only for a public repository.</p>
+  </div>
+  <div></div>
+</section>
+
+<!-- 05 SITEMAP + ROBOTS -->
+<section aria-labelledby="s-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">05</p><span style="display:block;width:28px;height:6px;background:var(--red);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="s-h" class="disp" style="font-size:34px;margin-bottom:6px">sitemap.xml and robots.txt</h2>
+    <p class="cap">sitemap.xml</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;&lt;loc&gt;https://igorkadziela.dev/&lt;/loc&gt;&lt;/url&gt;
+  &lt;url&gt;&lt;loc&gt;https://igorkadziela.dev/projects/researchhub&lt;/loc&gt;&lt;/url&gt;
+  &lt;url&gt;&lt;loc&gt;https://igorkadziela.dev/projects/parcel-analysis&lt;/loc&gt;&lt;/url&gt;
+  &lt;url&gt;&lt;loc&gt;https://igorkadziela.dev/projects/pzpp&lt;/loc&gt;&lt;/url&gt;
+  &lt;url&gt;&lt;loc&gt;https://igorkadziela.dev/resume&lt;/loc&gt;&lt;/url&gt;
+&lt;/urlset&gt;</pre>
+    <p class="cap">robots.txt</p>
+<pre>User-agent: *
+Allow: /
+
+Sitemap: https://igorkadziela.dev/sitemap.xml</pre>
+  </div>
+  <div></div>
+</section>
+
+<!-- 06 LLMS -->
+<section aria-labelledby="l-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">06</p><span style="display:block;width:28px;height:6px;background:var(--yellow);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="l-h" class="disp" style="font-size:34px;margin-bottom:6px">llms.txt</h2>
+    <p class="cap">Concise and factual. No keyword stuffing.</p>
+<pre># Igor Kadziela
+
+&gt; Software Engineer / Full-Stack Engineer. Builds end-to-end systems:
+&gt; backend architecture, web interfaces, data processing and AI.
+
+Core technologies: Java, Spring Boot, TypeScript, React, Next.js, Python,
+FastAPI, PostgreSQL, PostGIS, pgvector, Docker.
+Availability and contact: [TO BE FILLED]
+
+## Projects
+
+- [ResearchHub](https://igorkadziela.dev/projects/researchhub): Source-grounded
+  collaborative AI workspace for students and researchers. Active development.
+  Java 25 / Spring Boot 4.1 backend, Python 3.13 FastAPI worker, React,
+  TypeScript, PostgreSQL with pgvector. Private repository.
+- [System Analizy Uwarunkowań Działki](https://igorkadziela.dev/projects/parcel-analysis):
+  Spatial / investment parcel analysis platform using GIS and Polish
+  spatial-planning data. Next.js 16, FastAPI, PostgreSQL / PostGIS. Private
+  repository. LLM-assisted MPZP document extraction is an experimental
+  research track, not a finished feature.
+- [PZPP](https://igorkadziela.dev/projects/pzpp): Team project. Creator /
+  online-course SaaS platform. Igor's contributions: Stripe checkout and
+  post-payment provisioning, GrapesJS landing-page builder, course and lesson
+  management, student lesson experience and quizzes, CRM and messaging,
+  notifications, calendar sync, e-signature document workflows.
+
+## Resume
+
+- [Resume (HTML)](https://igorkadziela.dev/resume)
+- CV (PDF): [URL TO BE ADDED]</pre>
+  </div>
+  <div></div>
+</section>
+
+<!-- 07 CHECKLIST -->
+<section aria-labelledby="c-h" class="row bt">
+  <div style="padding:44px"><p class="disp" style="font-size:64px">07</p><span style="display:block;width:28px;height:6px;background:var(--blue);margin-top:14px"></span></div>
+  <div></div>
+  <div style="padding:44px">
+    <h2 id="c-h" class="disp" style="font-size:34px;margin-bottom:22px">Build, performance and contrast</h2>
+    <ul style="display:grid;gap:0;margin-bottom:34px">
+      <li style="padding:10px 0;border-top:1px solid var(--line);font-size:15px"><strong>Plain HTML first.</strong> Server-rendered pages; JavaScript only for the mobile menu. Hover effects are CSS.</li>
+      <li style="padding:10px 0;border-top:1px solid var(--line);font-size:15px"><strong>Images.</strong> AVIF / WebP with width and height; lazy-load everything except the portrait. Screenshots are grayscale at rest, colour on hover.</li>
+      <li style="padding:10px 0;border-top:1px solid var(--line);font-size:15px"><strong>Fonts.</strong> Self-host two families (League Spartan 800/900, Instrument Sans), <span class="mono" style="font-size:12.5px">font-display: swap</span>; IBM Plex Mono only for placeholders and captions.</li>
+      <li style="padding:10px 0;border-top:1px solid var(--line);font-size:15px"><strong>Motion.</strong> 200–320 ms slides and fills; <span class="mono" style="font-size:12.5px">prefers-reduced-motion</span> removes all transitions.</li>
+      <li style="padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:15px"><strong>Keyboard.</strong> Skip link, visible 3 px focus ring, hover effects mirrored on <span class="mono" style="font-size:12.5px">:focus-visible</span>. Tap targets 44 px or larger on mobile.</li>
+    </ul>
+    <p class="cap" style="margin-top:0">Colour pairs used for text</p>
+    <table class="tbl">
+      <thead><tr><th scope="col">Pair</th><th scope="col">Ratio</th><th scope="col">Use</th></tr></thead>
+      <tbody>
+        <tr><td><span class="sw" style="background:var(--blue)"></span>White on #2369F5</td><td>4.76 : 1</td><td>Passes AA for body text. Used for blue buttons and fields.</td></tr>
+        <tr><td><span class="sw" style="background:var(--red)"></span>Ink #17191D on #FE3D3C</td><td>4.98 : 1</td><td>Passes AA. White on red is only 3.5 : 1, so it is never used for text.</td></tr>
+        <tr><td><span class="sw" style="background:var(--yellow)"></span>Ink on #FFB523</td><td>9.9 : 1</td><td>Passes AAA. White on yellow is 1.8 : 1 and is never used.</td></tr>
+        <tr><td><span class="sw" style="background:var(--blue)"></span>Ink on #2369F5</td><td>3.7 : 1</td><td>Large display text only. Blue fields carry white text.</td></tr>
+        <tr><td><span class="sw" style="background:#555C69"></span>#555C69 on white</td><td>6.7 : 1</td><td>Secondary labels and captions.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div></div>
+</section>
+</main>
+
+<footer class="row bt" style="min-height:88px">
+  <div style="padding:0 44px;display:flex;align-items:center"><p class="lbl" style="font-size:11px">igorkadziela.dev</p></div>
+  <div></div>
+  <div style="padding:0 44px;display:flex;align-items:center"><p style="font-size:14px;color:var(--mute)">Implementation notes for the portfolio design. Not part of the public site.</p></div>
+  <div style="display:flex;align-items:flex-end"><div aria-hidden="true" style="width:100%;height:56px;background:var(--blue)"></div></div>
+</footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
