@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 
-// Fully static site, deployed to Cloudflare Pages from GitHub (build output: dist).
+// Fully static site, served by Cloudflare Workers static assets (see wrangler.jsonc).
 // No adapter is needed: add `@astrojs/cloudflare` only if on-demand rendering is ever required.
 export default defineConfig({
   site: 'https://igorkadziela.dev',

@@ -4,7 +4,7 @@ Personal engineering portfolio of Igor Kadziela. A fast, static, accessible and 
 reproduces an approved Bauhaus / International-Style design (Claude Design output, kept in `design/`).
 
 **Stack:** Astro 7 · TypeScript · plain CSS (scoped per component) · self-hosted fonts (Fontsource via Astro's Fonts API) ·
-Cloudflare Pages · Playwright. No UI framework; the only client-side script is the mobile menu.
+Cloudflare Workers static assets · Playwright. No UI framework; the only client-side script is the mobile menu.
 
 ## Local development
 
@@ -123,24 +123,24 @@ shows, so layouts can be compared like for like. Never set it in production. Oth
 boxes), `scripts/slice.mjs` (crop a tall screenshot), `scripts/extract-wireframes.mjs` (regenerates
 `src/components/projects/wireframes.ts` from the design), `scripts/generate-brand-assets.mjs` (`og.png`, `favicon.ico`).
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare Workers)
 
-The site is fully static, so Cloudflare Pages serves the `dist/` folder as it is. No adapter, Worker script or
-`wrangler.jsonc` is needed; `dist/404.html` answers unknown URLs. If on-demand rendering is ever needed, run `npx astro add cloudflare`.
+The site is fully static, so it ships as Workers **static assets**; no adapter and no Worker script are needed
+(`wrangler.jsonc`: `assets.directory = ./dist`, `not_found_handling = 404-page`). If on-demand rendering is ever needed,
+run `npx astro add cloudflare`.
 
 **Git-connected deployment (recommended):**
 
-1. Push the repository to GitHub (`main` is the production branch).
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**, select the repo.
-3. Build command: `npm run build`. Build output directory: `dist`. Root directory: `/`. Use Node 22 (`.nvmrc`).
-   The build downloads the open-source fonts once (Fontsource), so it needs network access, which Pages builds have.
-4. Save and deploy. No environment variables or secrets are required.
-5. Custom domain: the Pages project → **Custom domains → Set up a custom domain** → `igorkadziela.dev`
+1. Push the repository to GitHub.
+2. Cloudflare dashboard → **Workers & Pages → Create → Import a repository**, select the repo.
+3. Build command: `npm run build`. Deploy command: `npx wrangler deploy`. Root directory: `/`. Use Node 22 (`.nvmrc`).
+   The build downloads the open-source fonts once (Fontsource), so it needs network access, which Workers Builds has.
+4. Custom domain: Worker → **Settings → Domains & Routes → Add → Custom domain** → `igorkadziela.dev`
    (the domain's DNS must be on Cloudflare).
+5. No environment variables or secrets are required.
 
-**Manual deployment:** `npm run deploy` builds, then runs `wrangler pages deploy dist --project-name=portfolio --branch=main`
-(log in once with `npx wrangler login`). The project name must match the Pages project. Preview the built site with the
-Pages runtime: `npx wrangler pages dev dist`.
+**Manual deployment:** `npm run deploy` (builds, then `wrangler deploy`). Preview the Workers runtime locally with
+`npm run build && npx wrangler dev`.
 
 Canonical URLs have no trailing slash (`/projects/researchhub`); Cloudflare redirects `/projects/researchhub/` to the canonical form.
 
