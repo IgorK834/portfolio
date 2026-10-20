@@ -1,0 +1,611 @@
+---
+// Hero / identity. One DOM, recomposed by CSS:
+//   desktop  = the architectural grid (name on the grid line, portrait crossing the blue field)
+//   mobile   = rail layout: vertical labels in a narrow left rail, content stacked on the right
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+import { SHOW_PLACEHOLDERS, visible } from '../../utils/placeholders';
+import { hasResumePdf } from '../../utils/resume';
+import Icon from '../ui/Icon.astro';
+import GoLink from '../ui/GoLink.astro';
+import Portrait from './Portrait.astro';
+
+const showCv = hasResumePdf || SHOW_PLACEHOLDERS;
+const showGithub = visible(profile.github);
+const showLinkedin = visible(profile.linkedin);
+const halfWidth = showGithub && showLinkedin; // GitHub and LinkedIn share a row on mobile
+const showOpen = visible(profile.availability);
+// the design's optional third fact: where I am, or else how I can work
+const locationLabel = profile.location ? 'Location' : 'Work mode';
+const locationValue = profile.location ?? profile.workMode;
+const showLocation = visible(locationValue);
+const count = String(projects.length).padStart(2, '0');
+---
+
+<section class={`hero${showOpen || showLocation ? '' : ' hero-strip'}`} aria-label="Introduction">
+  <div class="rule rule-1" aria-hidden="true"></div>
+  <div class="rule rule-2" aria-hidden="true"></div>
+  <div class="rule rule-3" aria-hidden="true"></div>
+
+  <div class="field" aria-hidden="true"><span class="sign">ENGINEER</span></div>
+
+  <div class="rail rail-role" aria-hidden="true"><span class="rail-text lbl">Software engineer</span></div>
+  <p class="role disp">{profile.titleLines[0]}<br />{profile.titleLines[1]}</p>
+  <h1 class="name disp">
+    <span class="first">{profile.firstName}</span>{' '}<span class="last">{profile.lastName}</span><span class="sr">
+      — {profile.title}</span
+    >
+  </h1>
+
+  <figure class="portrait">
+    <div class="portrait-box"><Portrait /></div>
+  </figure>
+
+  <div class="profile-head"><p class="profile-label lbl">Profile</p></div>
+  <p class="profile-text">{profile.shortBio}</p>
+
+  <div class="stack">
+    <p class="lbl">Core stack</p>
+    <ul class="disp" aria-label="Core technologies">
+      {profile.coreStack.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+
+  <div class="rail rail-actions" aria-hidden="true"><span class="rail-text lbl">Actions</span></div>
+  <ul class="ctas" aria-label="Primary actions">
+    <li class="cta-item">
+      <a class="cta cta-primary" href="#projects"><span>View projects</span><Icon name="right" size={16} /></a>
+    </li>
+    {
+      showCv && (
+        <li class="cta-item">
+          <a class="cta" href={hasResumePdf ? profile.resumeUrl : '/resume'} download={hasResumePdf ? '' : undefined}>
+            <span>Download CV</span>
+            {!hasResumePdf && <span class="ph">[PDF — TO BE ADDED]</span>}
+          </a>
+        </li>
+      )
+    }
+    {
+      showGithub && (
+        <li class={`cta-item${halfWidth ? ' half-start' : ''}`}>
+          <a class="cta" href={profile.github ?? '#contact'} rel="me noopener" target={profile.github ? '_blank' : undefined}>
+            <span>GitHub</span>
+            {!profile.github && <span class="ph">[URL — TO BE ADDED]</span>}
+          </a>
+        </li>
+      )
+    }
+    {
+      showLinkedin && (
+        <li class={`cta-item${halfWidth ? ' half-end' : ''}`}>
+          <a class="cta" href={profile.linkedin ?? '#contact'} rel="me noopener" target={profile.linkedin ? '_blank' : undefined}>
+            <span>LinkedIn</span>
+            {!profile.linkedin && <span class="ph">[URL — TO BE ADDED]</span>}
+          </a>
+        </li>
+      )
+    }
+    <li class="cta-item cta-last">
+      <a class="cta" href="#contact"><span>Contact</span><Icon name="right" size={16} /></a>
+    </li>
+  </ul>
+
+  {
+    showOpen && (
+      <div class={`open${showLocation ? '' : ' open-last'}`}>
+        <p class="lbl">Open to</p>
+        <p>{profile.availability ?? <span class="ph">[ROLE / INTERNSHIP / JUNIOR / FULL-TIME — TO BE FILLED]</span>}</p>
+      </div>
+    )
+  }
+
+  <div class="count">
+    <span class="count-number disp">{count}</span>
+    <span class="count-label lbl mute">Projects</span>
+  </div>
+
+  <div class="scroll">
+    <GoLink href="#projects" label="Jump to selected work" direction="down" fill="var(--color-yellow)" ink="var(--color-ink)" size={30} />
+  </div>
+
+  {
+    showLocation && (
+      <div class="location">
+        <p class="lbl">{locationLabel}</p>
+        <p>{locationValue ?? <span class="ph">[CITY / COUNTRY — OPTIONAL<span class="on-wide">, TO BE FILLED</span>]</span>}</p>
+      </div>
+    )
+  }
+
+  <div class="yellow" aria-hidden="true"></div>
+</section>
+
+<style>
+  /* =====================================================================
+     Mobile + tablet (design: 390px). Grid: rail | content. --m scales geometry.
+     ===================================================================== */
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+  .rule,
+  .count,
+  .scroll {
+    display: none;
+  }
+
+  /* rail: a narrow cell holding a vertical label that reads bottom to top */
+  .rail {
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+    grid-column: 1;
+  }
+  .rail-text,
+  .profile-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .rail-role {
+    grid-row: 1 / 3;
+  }
+  .rail-actions {
+    grid-row: 6;
+  }
+
+  .role {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 28px 12px 0 20px;
+    font-size: calc(21 * var(--m));
+    line-height: 1.1;
+  }
+  .name {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 22px 12px 26px 20px;
+    /* Cap the design size so KADZIELA stays inside the 20px / 12px padding at 320px. */
+    font-size: min(calc(56 * var(--m)), calc((100cqw - var(--rail) - 32px) / 4.82));
+    white-space: nowrap;
+  }
+  .first,
+  .last {
+    display: block;
+  }
+
+  .field {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    position: relative;
+    align-self: end;
+    height: calc(320 * var(--m));
+    background: var(--color-blue);
+  }
+  .sign {
+    position: absolute;
+    left: calc(19 * var(--m));
+    top: calc(22 * var(--m));
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: calc(19 * var(--m));
+    line-height: 1.05;
+    letter-spacing: 0.14em;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  }
+  .portrait {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    justify-self: end;
+    align-self: start;
+    z-index: 2;
+    margin-right: 20px;
+    width: calc(236 * var(--m));
+    height: calc(410 * var(--m));
+  }
+  .portrait-box {
+    width: 100%;
+    height: 100%;
+  }
+
+  .profile-head {
+    grid-column: 1;
+    grid-row: 4;
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-grid);
+  }
+  .profile-text {
+    grid-column: 2;
+    grid-row: 4;
+    padding: 26px 20px 28px;
+    border-top: 1px solid var(--color-grid);
+    font-size: 19px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .stack {
+    grid-column: 1 / 3;
+    grid-row: 5;
+    z-index: 1;
+    padding: 22px 20px 14px calc(var(--rail) + 20px);
+    background: var(--color-red);
+    color: var(--color-ink);
+  }
+  .stack .lbl {
+    margin-bottom: 8px;
+  }
+  .stack ul {
+    font-size: 17px;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+  .stack li {
+    padding: 11px 0;
+    border-top: 1px solid rgba(23, 25, 29, 0.35);
+  }
+
+  .ctas {
+    grid-column: 2;
+    grid-row: 6;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-content: start;
+    padding: 28px 20px 30px;
+  }
+  .cta-item {
+    grid-column: 1 / -1;
+  }
+  .cta-item.half-start,
+  .cta-item.half-end {
+    grid-column: auto;
+  }
+  .cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 52px;
+    padding: 10px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .cta .ph {
+    font-size: 10.5px;
+  }
+  .cta-primary {
+    padding: 0 16px;
+    border-top: 0;
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .cta-primary:active {
+    background: var(--color-blue);
+  }
+  .cta-last .cta {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  /* GitHub | LinkedIn side by side */
+  .half-start .cta,
+  .half-end .cta {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    min-height: 65px;
+  }
+  .half-start .cta {
+    border-right: 1px solid var(--color-grid);
+  }
+  .half-end .cta {
+    padding-left: 14px;
+  }
+
+  .open,
+  .location {
+    grid-column: 1 / 3;
+    z-index: 1;
+    padding: 0 20px 0 calc(var(--rail) + 20px);
+    background: var(--color-yellow);
+  }
+  .open {
+    grid-row: 7;
+    padding-top: 24px;
+  }
+  .open-last {
+    padding-bottom: 26px;
+  }
+  .location {
+    grid-row: 8;
+    padding-top: 18px;
+    padding-bottom: 26px;
+  }
+  .open p:last-child,
+  .location p:last-child {
+    margin-top: 6px;
+  }
+  .open :global(.ph),
+  .location :global(.ph) {
+    background: rgba(255, 255, 255, 0.45);
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+  /* nothing to say yet: keep the colour as a plain strip */
+  .yellow {
+    display: none;
+    background: var(--color-yellow);
+  }
+  .hero-strip .yellow {
+    display: block;
+    grid-column: 1 / 3;
+    grid-row: 7;
+    z-index: 1;
+    height: calc(56 * var(--m));
+  }
+
+  /* =====================================================================
+     Tablet and up: hover effects, wider text
+     ===================================================================== */
+  @media (min-width: 768px) {
+    .profile-text {
+      max-width: 660px;
+      font-size: 22px;
+    }
+    .stack ul {
+      font-size: 19px;
+    }
+    .ctas {
+      max-width: 580px;
+    }
+    .cta::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 100%;
+      height: 2px;
+      background: var(--color-ink);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s var(--ease);
+    }
+    .cta:hover::after,
+    .cta:focus-visible::after {
+      transform: scaleX(1);
+    }
+    .cta :global(svg) {
+      flex: none;
+      transition: transform 0.2s var(--ease);
+    }
+    .cta:hover :global(svg) {
+      transform: translateX(5px);
+    }
+    .cta-primary {
+      transition: background 0.2s var(--ease);
+    }
+    .cta-primary::after {
+      display: none;
+    }
+    .cta-primary:hover,
+    .cta-primary:focus-visible {
+      background: var(--color-blue);
+    }
+  }
+
+  /* =====================================================================
+     Desktop: the architectural grid (design: 1360px site, 1440px viewport)
+     ===================================================================== */
+  @media (min-width: 1200px) {
+    .hero {
+      grid-template-columns: var(--cols);
+      grid-template-rows: calc(150 * var(--u)) calc(310 * var(--u)) calc(150 * var(--u)) auto minmax(0, 1fr);
+      min-height: calc(900 * var(--u));
+    }
+    .rail {
+      display: none;
+    }
+
+    .rule {
+      display: block;
+      grid-column: 1 / 6;
+      align-self: start;
+      height: 1px;
+      background: var(--color-grid);
+    }
+    .rule-1 {
+      grid-row: 2;
+    }
+    .rule-2 {
+      grid-row: 3;
+    }
+    .rule-3 {
+      grid-row: 4;
+    }
+
+    .field {
+      grid-column: 3 / 6;
+      grid-row: 2;
+      height: auto;
+      align-self: stretch;
+    }
+    .sign {
+      left: calc(64 * var(--u));
+      top: calc(36 * var(--u));
+      font-size: calc(30 * var(--u));
+      letter-spacing: 0.12em;
+    }
+
+    .role {
+      grid-column: 1 / 3;
+      grid-row: 1;
+      align-self: start;
+      padding: calc(40 * var(--u)) calc(44 * var(--u));
+      font-size: calc(30 * var(--u));
+      line-height: 1.08;
+    }
+    .name {
+      grid-column: 3 / 5;
+      grid-row: 3;
+      align-self: center;
+      z-index: 3;
+      padding: 0 0 0 calc(44 * var(--u));
+      font-size: calc(84 * var(--u));
+    }
+    .first,
+    .last {
+      display: inline;
+    }
+
+    .portrait {
+      grid-column: 3 / 6;
+      grid-row: 1 / 3;
+      display: flex;
+      align-items: flex-end;
+      justify-self: stretch;
+      align-self: stretch;
+      width: auto;
+      height: auto;
+      margin: 0;
+    }
+    .portrait-box {
+      flex: none;
+      width: calc(420 * var(--u));
+      height: calc(440 * var(--u));
+      margin-left: calc(300 * var(--u));
+    }
+
+    .stack {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: end;
+      padding: calc(24 * var(--u)) calc(28 * var(--u)) calc(20 * var(--u));
+    }
+    .stack .lbl {
+      margin-bottom: calc(10 * var(--u));
+    }
+    .stack ul {
+      font-size: max(13px, calc(15 * var(--u)));
+    }
+    .stack li {
+      padding: calc(9 * var(--u)) 0;
+    }
+
+    .open {
+      grid-column: 1;
+      grid-row: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 calc(44 * var(--u));
+      background: transparent;
+    }
+    .open p:last-child,
+    .location p:last-child {
+      margin-top: 0;
+    }
+    .open :global(.ph),
+    .location :global(.ph) {
+      background: transparent;
+      border-color: #8d96a6;
+      color: var(--wire-note);
+    }
+    .count {
+      grid-column: 2;
+      grid-row: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .count-number {
+      font-size: calc(44 * var(--u));
+    }
+    .count-label {
+      font-size: 10px;
+    }
+    .scroll {
+      display: grid;
+      grid-column: 5;
+      grid-row: 3;
+    }
+
+    .location {
+      grid-column: 1;
+      grid-row: 4 / 6;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: calc(32 * var(--u)) calc(44 * var(--u));
+      background: transparent;
+    }
+    .yellow,
+    .hero-strip .yellow {
+      display: block;
+      grid-column: 2;
+      grid-row: 4 / 6;
+      align-self: end;
+      height: calc(72 * var(--u));
+    }
+
+    .profile-head {
+      grid-column: 3;
+      grid-row: 4;
+      display: block;
+      padding: calc(32 * var(--u)) calc(18 * var(--u)) calc(12 * var(--u)) calc(44 * var(--u));
+      border-top: 0;
+    }
+    .profile-label {
+      writing-mode: horizontal-tb;
+      transform: none;
+      color: inherit;
+    }
+    .profile-text {
+      grid-column: 3;
+      grid-row: 5;
+      align-self: start;
+      max-width: none;
+      padding: 0 calc(18 * var(--u)) calc(32 * var(--u)) calc(44 * var(--u));
+      border-top: 0;
+      font-size: max(14.5px, calc(17 * var(--u)));
+    }
+    .ctas {
+      grid-column: 4;
+      grid-row: 4 / 6;
+      grid-template-columns: 1fr;
+      max-width: none;
+      padding: calc(32 * var(--u)) calc(44 * var(--u)) calc(32 * var(--u)) calc(18 * var(--u));
+    }
+    .cta {
+      min-height: 0;
+      padding: 11px 0;
+      font-size: max(11.5px, calc(13 * var(--u)));
+    }
+    .cta-primary {
+      padding: 15px 16px;
+    }
+    .half-start .cta,
+    .half-end .cta {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 0;
+      padding: 11px 0;
+      border-right: 0;
+    }
+  }
+</style>
