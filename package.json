@@ -8,21 +8,29 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro build && astro preview",
+    "preview": "astro preview",
     "astro": "astro",
-    "generate-types": "wrangler types",
-    "deploy": "astro build && wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "check": "astro check",
+    "test": "playwright test",
+    "visual:reference": "node scripts/design-reference.mjs",
+    "visual": "node scripts/design-reference.mjs && node scripts/visual-diff.mjs",
+    "cv:pdf": "node scripts/export-cv.mjs",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=portfolio --branch=main"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.3.4",
     "astro": "^7.3.6"
   },
   "allowScripts": {
     "esbuild": true
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.4",
+    "@types/pngjs": "^6.0.5",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "typescript": "^6.0.3",
     "wrangler": "^4.147.0"
   }
 }
