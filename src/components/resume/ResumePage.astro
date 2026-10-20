@@ -1,0 +1,431 @@
+---
+// The HTML resume: the same recruiter-relevant facts as the site, as plain semantic content.
+// Built only from src/data/profile.ts and src/data/projects.ts. Sections without data do not render.
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+import { SHOW_PLACEHOLDERS, visible } from '../../utils/placeholders';
+import { hasResumePdf } from '../../utils/resume';
+import Icon from '../ui/Icon.astro';
+import NumberedSection from '../ui/NumberedSection.astro';
+
+const trim = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
+const contact = [
+  { label: 'Email', value: profile.email, href: profile.email ? `mailto:${profile.email}` : undefined, text: profile.email },
+  { label: 'LinkedIn', value: profile.linkedin, href: profile.linkedin, text: profile.linkedin && trim(profile.linkedin) },
+  { label: 'GitHub', value: profile.github, href: profile.github, text: profile.github && trim(profile.github) },
+  { label: 'Location', value: profile.location, text: profile.location },
+  { label: 'Open to', value: profile.availability, text: profile.availability },
+  { label: 'Work mode', value: profile.workMode, text: profile.workMode },
+].filter((c) => visible(c.value));
+
+const background = [
+  { label: 'Education', value: profile.education },
+  { label: 'Current status', value: profile.currentStatus },
+  { label: 'Target role', value: profile.targetRole },
+  { label: 'Languages', value: profile.languages },
+].filter((c) => visible(c.value));
+
+const sections = [
+  { key: 'summary', title: 'Summary', show: true },
+  { key: 'contact', title: 'Contact', show: contact.length > 0 },
+  { key: 'experience', title: 'Experience', show: (profile.experience?.length ?? 0) > 0 },
+  { key: 'skills', title: 'Skills', show: true },
+  { key: 'projects', title: 'Projects', show: true },
+  { key: 'background', title: 'Education and languages', show: background.length > 0 },
+]
+  .filter((s) => s.show)
+  .map((s, i) => ({ ...s, number: String(i + 1).padStart(2, '0'), id: `r${String(i + 1).padStart(2, '0')}` }));
+
+const kind = (p: (typeof projects)[number]) =>
+  [p.status, p.repository.visibility === 'private' ? 'Private repository' : 'Public repository', p.inDevelopment ? undefined : 'Not deployed']
+    .filter(Boolean)
+    .join(' · ');
+---
+
+<div class="intro">
+  <div class="block">
+    <p class="kind lbl">PDF · HTML</p>
+    <p class="word disp" aria-hidden="true">Resume</p>
+  </div>
+  <div class="who">
+    <h1 class="name disp">{profile.name}<span class="sr"> — Resume</span></h1>
+    <p class="role">{profile.title}</p>
+    <div class="actions">
+      {
+        (hasResumePdf || SHOW_PLACEHOLDERS) && (
+          <a class="btn btn-blue" href={hasResumePdf ? profile.resumeUrl : '#'} download={hasResumePdf ? '' : undefined} aria-label="Download CV as PDF">
+            <span>Download CV (PDF)</span>
+            <Icon name="down" size={16} />
+          </a>
+        )
+      }
+      <a class="btn" href="/#projects"><span>View projects</span><Icon name="right" size={16} /></a>
+      <a class="btn" href="/cv"><span>Print-ready CV</span><Icon name="right" size={16} /></a>
+      {!hasResumePdf && SHOW_PLACEHOLDERS && <span class="ph">[CV PDF — FILE TO BE ADDED]</span>}
+    </div>
+  </div>
+</div>
+
+{
+  sections.map((section) => (
+    <NumberedSection id={section.id} number={section.number} title={section.title} accentStyle="--acc:var(--color-blue)">
+      {section.key === 'summary' && (
+        <>
+          <p class="lead">{profile.shortBio}</p>
+          <p class="p">{profile.about.lead}</p>
+        </>
+      )}
+
+      {section.key === 'contact' && (
+        <dl class="facts">
+          {contact.map((item) => (
+            <div class="fact">
+              <dt class="lbl mute">{item.label}</dt>
+              <dd>
+                {item.text ? (item.href ? <a href={item.href} rel="me noopener">{item.text}</a> : item.text) : <span class="ph">[TO BE FILLED]</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {section.key === 'skills' && (
+        <dl class="skills">
+          {profile.skills.map((group) => (
+            <div class="skill">
+              <dt class="lbl mute">{group.label}</dt>
+              <dd>{group.skills.map((s) => s.name).join(' · ')}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {section.key === 'projects' && (
+        <ol class="projects" role="list">
+          {projects.map((project) => (
+            <li class="project">
+              <article>
+                <h3 class="p-title">
+                  <a href={`/projects/${project.slug}`}>{project.title}</a>
+                </h3>
+                <p class="p-kind lbl mute">{kind(project)}</p>
+                <p class="p-lead">{project.overview.lead}</p>
+                {project.role && <p class="p-role"><strong>Role:</strong> {project.role}</p>}
+                <ul class="p-points" role="list">
+                  {project.highlights.map((point) => (
+                    <li>
+                      <strong>{point.title}.</strong> {point.text}
+                    </li>
+                  ))}
+                </ul>
+                {project.repository.url && (
+                  <p class="p-stack">
+                    <strong>Source:</strong> <a href={project.repository.url} rel="noopener">{project.repository.url.replace('https://', '')}</a>
+                  </p>
+                )}
+                <p class="p-stack"><strong>Technologies:</strong> {project.stack.flatMap((g) => g.items).join(' · ')}</p>
+              </article>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {section.key === 'experience' && (
+        <ol class="projects" role="list">
+          {(profile.experience ?? []).map((job) => (
+            <li class="project">
+              <article>
+                <h3 class="p-title">{job.role} · {job.company}</h3>
+                <p class="p-kind lbl mute">{job.period}</p>
+                {job.context && <p class="p-lead">{job.context}</p>}
+                <ul class="p-points" role="list">
+                  {job.bullets.map((bullet) => <li>{bullet}</li>)}
+                </ul>
+                {job.links && (
+                  <p class="p-stack">
+                    <strong>Sites:</strong>{' '}
+                    {job.links.map((link, i) => (
+                      <>
+                        {i > 0 && ' · '}
+                        <a href={link.url} rel="noopener">{link.label}</a>
+                      </>
+                    ))}
+                  </p>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {section.key === 'background' && (
+        <dl class="facts">
+          {background.map((item) => (
+            <div class="fact">
+              <dt class="lbl mute">{item.label}</dt>
+              <dd>{item.value ?? <span class="ph">[TO BE FILLED]</span>}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </NumberedSection>
+  ))
+}
+
+<style>
+  /* ---------- mobile ---------- */
+  .intro {
+    position: relative;
+    z-index: 1;
+  }
+  .block {
+    padding: 40px 20px;
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .kind {
+    color: #c3cad6;
+  }
+  .word {
+    margin-top: 20px;
+    font-size: 64px;
+  }
+  .who {
+    padding: 36px 20px 30px;
+  }
+  .name {
+    font-size: calc(48 * var(--m));
+  }
+  .role {
+    margin-top: 14px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .actions {
+    display: grid;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 54px;
+    padding: 0 18px;
+    border: 2px solid var(--color-ink);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .btn-blue {
+    background: var(--color-blue);
+    border-color: var(--color-blue);
+    color: #fff;
+  }
+
+  .lead {
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .lead + .p {
+    margin-top: 16px;
+  }
+  .p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-body);
+  }
+  .fact {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .facts {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .fact dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .fact a,
+  .p-title a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .skills {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .skill {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .skill dd {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+
+  .project {
+    padding: 22px 0;
+    border-top: 2px solid var(--color-ink);
+  }
+  .project:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .p-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .p-kind {
+    margin-top: 8px;
+  }
+  .p-lead,
+  .p-role,
+  .p-stack,
+  .p-points {
+    margin-top: 12px;
+  }
+  .p-points li {
+    position: relative;
+    padding: 8px 0 8px 22px;
+    border-top: 1px solid var(--color-grid);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--color-body);
+  }
+  .p-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 10px;
+    height: 10px;
+    background: var(--acc, var(--color-ink));
+  }
+  .p-points strong,
+  .p-role strong,
+  .p-stack strong {
+    color: var(--color-ink);
+  }
+
+  /* ---------- tablet ---------- */
+  @media (min-width: 768px) {
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    }
+    .block {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      padding: 48px 40px;
+      container-type: inline-size;
+    }
+    .word {
+      min-width: 0;
+      font-size: min(88px, calc(100cqi / 3.95));
+      white-space: nowrap;
+    }
+    .who {
+      padding: 48px 40px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn {
+      min-height: 0;
+      padding: 16px 20px;
+    }
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width: 1200px) {
+    .intro {
+      grid-template-columns: var(--cols);
+      min-height: calc(340 * var(--u));
+    }
+    .block {
+      grid-column: 1 / 3;
+      padding: calc(44 * var(--u));
+    }
+    .word {
+      font-size: calc(88 * var(--u));
+    }
+    .who {
+      grid-column: 3 / 5;
+      padding: calc(44 * var(--u));
+    }
+    .name {
+      font-size: calc(84 * var(--u));
+    }
+    .role {
+      font-size: max(16px, calc(20 * var(--u)));
+    }
+    .btn {
+      transition:
+        background 0.2s var(--ease),
+        color 0.2s var(--ease),
+        border-color 0.2s var(--ease);
+    }
+    .btn :global(svg) {
+      transition: transform 0.2s var(--ease);
+    }
+    .btn:hover :global(svg) {
+      transform: translateX(5px);
+    }
+    .btn:hover {
+      background: var(--color-ink);
+      color: #fff;
+    }
+    .btn-blue:hover {
+      border-color: var(--color-ink);
+    }
+
+    .lead {
+      font-size: max(16px, calc(20 * var(--u)));
+    }
+    .p {
+      max-width: calc(600 * var(--u));
+    }
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 40px;
+    }
+    .fact {
+      padding: 14px 0;
+    }
+    .fact dd {
+      margin-top: 5px;
+    }
+    .skill {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr);
+      gap: 24px;
+      padding: 14px 0;
+    }
+    .skill dd {
+      margin: 0;
+    }
+  }
+
+  @media print {
+    .btn,
+    .actions {
+      display: none;
+    }
+  }
+</style>
