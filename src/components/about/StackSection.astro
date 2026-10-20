@@ -1,0 +1,240 @@
+---
+// Engineering / technology overview: skills grouped by role in a system (no skill bars).
+// Small squares show which projects use a technology; the same information is also in screen-reader text.
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+import type { Skill } from '../../data/types';
+
+const countWord: Record<number, string> = { 2: 'two', 3: 'three', 4: 'four', 5: 'five' };
+const projectBySlug = (slug: string) => projects.find((p) => p.slug === slug);
+
+/** "(used in ResearchHub, obiekt.io)" or "(used in all three projects)". */
+const usedIn = (skill: Skill) => {
+  const used = (skill.projects ?? []).map(projectBySlug).filter((p) => p !== undefined);
+  if (used.length === 0) return '';
+  if (used.length === projects.length && used.length > 1) return ` (used in all ${countWord[used.length] ?? used.length} projects)`;
+  return ` (used in ${used.map((p) => p.shortTitle).join(', ')})`;
+};
+---
+
+<section id="stack" class="stack" aria-labelledby="stack-title">
+  <div class="head">
+    <div class="rail" aria-hidden="true"><span class="rail-text lbl">By role</span></div>
+    <h2 id="stack-title" class="title disp">Engineering<br />stack</h2>
+    <div class="intro">
+      <p>{profile.copy.stackIntro}</p>
+      <ul class="legend">
+        {
+          projects.map((project) => (
+            <li>
+              <i class={`mk mk-${project.accent}`} aria-hidden="true" />
+              {project.number} {project.shortTitle}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  {
+    profile.skills.map((group) => (
+      <div class="group" style={group.phoneMinHeight ? `--phone-min:${group.phoneMinHeight}px` : undefined}>
+        <div class="group-head">
+          <h3 class="group-title disp">{group.label}</h3>
+        </div>
+        <ul class="tech">
+          {group.skills.map((skill) => (
+            <li>
+              {skill.name}
+              {(skill.projects ?? []).map((slug) => {
+                const project = projectBySlug(slug);
+                return project && <i class={`mk mk-${project.accent}`} aria-hidden="true" />;
+              })}
+              <span class="sr">{usedIn(skill)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  /* ---------- mobile ---------- */
+  .stack {
+    position: relative;
+    z-index: 1;
+  }
+  .head,
+  .group {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    border-top: 1px solid var(--color-grid);
+  }
+  .rail,
+  .group-head {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+  }
+  .rail {
+    grid-row: 1 / 3;
+  }
+  .rail-text,
+  .group-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+  }
+  .rail-text {
+    color: var(--color-mute);
+  }
+  /* the vertical group label uses the small-label style on phones */
+  .group-title {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.4;
+  }
+  .title {
+    grid-column: 2;
+    padding: 36px 20px 0;
+    font-size: min(40px, calc((100cqw - var(--rail) - 28px) / 6.72));
+  }
+  .intro {
+    grid-column: 2;
+    padding: 14px 20px 28px;
+  }
+  .intro p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .legend {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .group {
+    min-height: var(--phone-min, 150px);
+  }
+  .tech {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 8px 22px;
+    padding: 26px 20px 28px;
+  }
+  .tech li {
+    font-size: 16px;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .mk {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 5px;
+    vertical-align: 1px;
+  }
+  .legend .mk {
+    margin: 0 8px 0 0;
+  }
+  .mk-blue {
+    background: var(--color-blue);
+  }
+  .mk-red {
+    background: var(--color-red);
+  }
+  .mk-yellow {
+    background: var(--color-yellow);
+  }
+
+  /* ---------- tablet: lists of technologies get more room ---------- */
+  @media (min-width: 768px) {
+    .tech {
+      gap: 10px 34px;
+      padding-right: 40px;
+    }
+    .tech li {
+      font-size: 17px;
+    }
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width: 1200px) {
+    .head,
+    .group {
+      grid-template-columns: var(--cols);
+    }
+    .head {
+      min-height: calc(190 * var(--u));
+    }
+    .rail {
+      display: none;
+    }
+    .title {
+      grid-column: 1;
+      grid-row: 1;
+      padding: calc(44 * var(--u));
+      /* As in the design: ENGINEERING is wider than column A and runs into the empty column B.
+         It must not break inside the word (the global heading rule would). */
+      font-size: calc(44 * var(--u));
+      overflow-wrap: normal;
+    }
+    .intro {
+      grid-column: 3 / 5;
+      grid-row: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 14px;
+      padding: calc(44 * var(--u));
+    }
+    .intro p {
+      max-width: calc(540 * var(--u));
+      font-size: max(15px, calc(18 * var(--u)));
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      margin: 0;
+    }
+    .legend .mk {
+      margin-right: 6px;
+    }
+
+    .group {
+      min-height: calc(130 * var(--u));
+    }
+    .group-head {
+      display: block;
+      padding: calc(44 * var(--u));
+    }
+    .group-title {
+      writing-mode: horizontal-tb;
+      transform: none;
+      white-space: normal;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: calc(24 * var(--u));
+      letter-spacing: 0.005em;
+      line-height: 0.92;
+      text-transform: uppercase;
+    }
+    .tech {
+      grid-column: 3 / 5;
+      padding: calc(44 * var(--u)) calc(44 * var(--u)) calc(40 * var(--u));
+      gap: 10px 34px;
+    }
+    .tech li {
+      font-size: max(14.5px, calc(17 * var(--u)));
+    }
+  }
+</style>

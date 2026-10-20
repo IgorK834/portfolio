@@ -1,0 +1,292 @@
+---
+// About: concrete engineering interests, then profile details. Details that are not filled in
+// (education, status, target role, location, languages) are hidden until they exist.
+import { profile } from '../../data/profile';
+import { SHOW_PLACEHOLDERS, visible } from '../../utils/placeholders';
+
+const details = [
+  { label: 'Education', value: profile.education, placeholder: '[TO BE FILLED]' },
+  ...(profile.experience ?? []).map((job) => ({
+    label: job.current ? 'Now' : job.period,
+    value: `${job.role} · ${job.company}`,
+    placeholder: '',
+  })),
+  { label: 'Target role', value: profile.targetRole, placeholder: '[ROLE / INTERNSHIP / JUNIOR / FULL-TIME — TO BE FILLED]' },
+  { label: 'Work mode', value: profile.workMode, placeholder: '[TO BE FILLED]' },
+  { label: 'Location', value: profile.location, placeholder: '[TO BE FILLED]' },
+  { label: 'Languages', value: profile.languages, placeholder: '[TO BE FILLED]' },
+].filter((d) => visible(d.value));
+---
+
+<section id="about" class="about" aria-labelledby="about-title">
+  <div class="rail rail-intro" aria-hidden="true"><span class="rail-text lbl">Profile</span></div>
+  <h2 id="about-title" class="title disp">About</h2>
+  <p class="lead">{profile.about.lead}</p>
+
+  <div class="rail rail-work" aria-hidden="true"><span class="rail-text lbl">What I work on</span></div>
+  <div class="work">
+    <h3 class="work-title lbl">What I work on</h3>
+    <ul class="tl">
+      {
+        profile.about.interests.map((item) => (
+          <li>
+            <strong>{item.title}</strong>
+            <br />
+            <span class="hd">{item.text}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  {
+    details.length > 0 && (
+      <>
+        <div class="rule" aria-hidden="true" />
+        <div class="details-head">
+          <h3 class="lbl details-title">Profile details</h3>
+          <span class="rail rail-details" aria-hidden="true"><span class="rail-text lbl">Details</span></span>
+          <div class="yellow" aria-hidden="true" />
+        </div>
+        <dl class="details">
+          {details.map((d) => (
+            <div class="fact">
+              <dt class="lbl mute">{d.label}</dt>
+              <dd>{d.value ?? (SHOW_PLACEHOLDERS && <span class="ph">{d.placeholder}</span>)}</dd>
+            </div>
+          ))}
+        </dl>
+      </>
+    )
+  }
+</section>
+
+<style>
+  /* ---------- mobile ---------- */
+  .about {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+  .rail {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-grid);
+  }
+  .rail-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .rail-intro {
+    grid-row: 1 / 3;
+  }
+  .title {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 36px 20px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 40px;
+  }
+  .lead {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 18px 20px 30px;
+    font-size: 17px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .rail-work {
+    grid-row: 3;
+  }
+  .work {
+    grid-column: 2;
+    grid-row: 3;
+    padding: 26px 20px 30px;
+    border-top: 1px solid var(--color-grid);
+  }
+  .work-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .tl li {
+    padding: 6px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .tl li:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .hd {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--color-body);
+  }
+
+  .rule {
+    display: none;
+  }
+  .details-head {
+    grid-column: 1;
+    grid-row: 4;
+    position: relative;
+    border-top: 1px solid var(--color-grid);
+  }
+  .details-title {
+    display: none;
+  }
+  .details-head .rail {
+    border-top: 0;
+    height: 100%;
+  }
+  .details-head .yellow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    background: var(--color-yellow);
+  }
+  .details {
+    grid-column: 2;
+    grid-row: 4;
+    padding: 26px 20px 30px;
+    border-top: 1px solid var(--color-grid);
+  }
+  .fact {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .fact:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .fact dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* ---------- tablet ---------- */
+  @media (min-width: 768px) {
+    .lead {
+      max-width: 62ch;
+    }
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width: 1200px) {
+    .about {
+      grid-template-columns: var(--cols);
+      grid-template-rows: auto auto;
+    }
+    .rail {
+      display: none;
+    }
+    /* +1px on row 1: its hairline takes up space in the design */
+    .title {
+      grid-column: 1;
+      grid-row: 1;
+      padding: calc(44 * var(--u) + 1px) calc(44 * var(--u)) calc(44 * var(--u));
+      font-size: calc(44 * var(--u));
+    }
+    .lead {
+      grid-column: 3;
+      grid-row: 1;
+      max-width: none;
+      padding: calc(44 * var(--u) + 1px) calc(20 * var(--u)) calc(44 * var(--u)) calc(44 * var(--u));
+      font-size: max(15px, calc(19 * var(--u)));
+      line-height: 1.45;
+    }
+    .work {
+      grid-column: 4;
+      grid-row: 1;
+      max-width: none;
+      padding: calc(44 * var(--u) + 1px) calc(44 * var(--u)) calc(44 * var(--u)) calc(20 * var(--u));
+      border-top: 0;
+    }
+    .work-title {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+      display: block;
+      margin-bottom: 14px;
+    }
+    /* hairlines that span the whole row */
+    .title,
+    .lead,
+    .work {
+      border-top: 0;
+    }
+    .about::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: var(--color-grid);
+    }
+
+    .rule {
+      display: block;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      align-self: start;
+      height: 1px;
+      background: var(--color-grid);
+    }
+    .details-head {
+      grid-column: 1 / 3;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 2.05fr) minmax(0, 1fr);
+      border-top: 0;
+    }
+    .details-title {
+      display: block;
+      grid-column: 1;
+      padding: calc(44 * var(--u) + 1px) calc(44 * var(--u)) calc(44 * var(--u));
+    }
+    .details-head .rail {
+      display: none;
+    }
+    .details-head .yellow {
+      position: static;
+      grid-column: 2;
+      align-self: end;
+      height: calc(72 * var(--u));
+    }
+    .details {
+      grid-column: 3 / 5;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 40px;
+      align-content: start;
+      max-width: none;
+      padding: calc(44 * var(--u) + 1px) calc(44 * var(--u)) calc(44 * var(--u));
+      border-top: 0;
+    }
+    .fact,
+    .fact:first-child {
+      padding: 14px 0;
+      border-top: 1px solid var(--color-grid);
+    }
+    .fact dd {
+      margin-top: 5px;
+    }
+  }
+</style>
