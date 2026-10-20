@@ -1,0 +1,611 @@
+---
+// The printable CV: one A4 sheet, black on white, plain text that parsers and printers handle well.
+// Content comes from profile.ts and projects.ts; the variant (data/cv.ts) chooses emphasis and order.
+// Screen-only toolbar: print / save as PDF, switch variant, highlight keywords from a job advertisement,
+// replace the headline, edit text for a one-off copy. None of it appears in the printout.
+import { cvVariants, type CvVariant } from '../../data/cv';
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+
+interface Props {
+  variant: CvVariant;
+}
+
+const { variant } = Astro.props;
+const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
+
+const contact = [
+  profile.email && { label: 'E-mail', text: profile.email, href: `mailto:${profile.email}` },
+  profile.github && { label: 'GitHub', text: bare(profile.github), href: profile.github },
+  profile.linkedin && { label: 'LinkedIn', text: bare(profile.linkedin), href: profile.linkedin },
+  profile.location && { label: 'Location', text: profile.location },
+].filter((c): c is { label: string; text: string; href?: string } => Boolean(c));
+
+// skills: variant order, then the usual order
+const groups = [...profile.skills]
+  .sort((a, b) => {
+    const order = variant.groupOrder ?? [];
+    const ia = order.indexOf(a.label);
+    const ib = order.indexOf(b.label);
+    return (ia === -1 ? order.length : ia) - (ib === -1 ? order.length : ib);
+  })
+  .map((group) => {
+    const first = variant.skillsFirst ?? [];
+    const rank = (name: string) => (first.includes(name) ? first.indexOf(name) : first.length);
+    return { label: group.label, skills: [...group.skills].sort((a, b) => rank(a.name) - rank(b.name)) };
+  });
+
+const chosen = variant.projects.map((slug) => projects.find((p) => p.slug === slug)).filter((p) => p !== undefined);
+
+// bold the variant's emphasised words
+const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const emphasise = (text: string) => {
+  const words = variant.emphasize ?? [];
+  if (words.length === 0) return escapeHtml(text);
+  const pattern = new RegExp(`(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+  return escapeHtml(text).replace(pattern, '<strong>$1</strong>');
+};
+---
+
+<div class="toolbar" data-toolbar>
+  <div class="tb-row">
+    <p class="tb-title"><strong>Printable CV</strong> <span>A4 · one click to PDF</span></p>
+    <nav aria-label="CV versions" class="tb-variants">
+      {
+        cvVariants.map((v) => (
+          <a
+            href={v.slug === 'default' ? '/cv' : `/cv/${v.slug}`}
+            data-variant-link
+            aria-current={v.slug === variant.slug ? 'page' : undefined}
+          >
+            {v.label}
+          </a>
+        ))
+      }
+    </nav>
+    <button type="button" class="tb-print" data-print>Print / Save as PDF</button>
+  </div>
+  <div class="tb-row tb-tailor">
+    <label>
+      <span>Headline</span>
+      <input type="text" data-title-input placeholder={variant.headline} autocomplete="off" />
+    </label>
+    <label class="grow">
+      <span>Highlight keywords from the job advertisement (comma separated)</span>
+      <input type="text" data-hl-input placeholder="React, Spring Boot, Docker" autocomplete="off" />
+    </label>
+    <label class="check"><input type="checkbox" data-edit-toggle /> <span>Edit text</span></label>
+    <a class="tb-back" href="/resume">Back to resume</a>
+  </div>
+  <p class="tb-hint">
+    Tip: add <code>?hl=React,Docker&amp;title=Junior%20Frontend%20Developer</code> to the address to share a tailored link.
+    Edits are not saved: print or save as PDF when it looks right. Turn off “Headers and footers” in the print dialog.
+  </p>
+</div>
+
+<div class="sheet">
+  <article class="cv" data-cv>
+    <header class="head">
+      <div class="who">
+        <h1 class="name">{profile.name}</h1>
+        <p class="headline" data-headline data-edit>{variant.headline}</p>
+      </div>
+      <ul class="contact">
+        {
+          contact.map((c) => (
+            <li>
+              {c.href ? <a href={c.href} rel="me noopener">{c.text}</a> : c.text}
+            </li>
+          ))
+        }
+        {profile.availability && <li class="open" data-edit>Open to: {profile.availability}</li>}
+        {profile.workMode && <li data-edit>{profile.workMode}</li>}
+      </ul>
+    </header>
+
+    <div class="cols">
+      <div class="main">
+        <section aria-labelledby="cv-summary">
+          <h2 id="cv-summary">Profile</h2>
+          <p data-edit data-hl set:html={emphasise(variant.summary)} />
+        </section>
+
+        <section aria-labelledby="cv-experience">
+          <h2 id="cv-experience">Experience</h2>
+          {
+            (profile.experience ?? []).map((job) => (
+              <article class="job">
+                <div class="job-head">
+                  <h3 data-edit>{job.role} · {job.company}</h3>
+                  <p class="period">{job.period}</p>
+                </div>
+                {job.context && <p class="context" data-edit data-hl>{job.context}</p>}
+                <ul class="bullets">
+                  {job.bullets.map((bullet) => <li data-edit data-hl set:html={emphasise(bullet)} />)}
+                </ul>
+              </article>
+            ))
+          }
+        </section>
+
+        <section aria-labelledby="cv-projects">
+          <h2 id="cv-projects">Selected projects</h2>
+          {
+            chosen.map((project) => (
+              <article class="project">
+                <div class="job-head">
+                  <h3>{project.title}</h3>
+                  <p class="period">{project.inDevelopment ? 'In development' : (project.status ?? project.category)}</p>
+                </div>
+                <p data-edit data-hl set:html={emphasise(project.summary.replace(/^In development\.\s*/, ''))} />
+                <p class="stack" data-hl>
+                  {project.stack.flatMap((g) => g.items).slice(0, 9).join(' · ')}
+                </p>
+                {project.repository.url && (
+                  <p class="repo">
+                    <a href={project.repository.url} rel="noopener">{bare(project.repository.url)}</a>
+                  </p>
+                )}
+              </article>
+            ))
+          }
+        </section>
+      </div>
+
+      <aside class="side">
+        <section aria-labelledby="cv-skills">
+          <h2 id="cv-skills">Skills</h2>
+          {
+            groups.map((group) => (
+              <div class="skill-group">
+                <h3>{group.label}</h3>
+                <ul class="skills">
+                  {group.skills.map((skill, index) => (
+                    <li data-hl data-skill data-order={index}>{skill.name}</li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </section>
+
+        {
+          profile.studies && (
+            <section aria-labelledby="cv-education">
+              <h2 id="cv-education">Education</h2>
+              <p class="school" data-edit>{profile.studies.school}</p>
+              <p data-edit>{profile.studies.field}</p>
+              <p class="period">{profile.studies.period}{profile.studies.status ? ` · ${profile.studies.status}` : ''}</p>
+            </section>
+          )
+        }
+
+        {
+          profile.languages && (
+            <section aria-labelledby="cv-languages">
+              <h2 id="cv-languages">Languages</h2>
+              <p data-edit>{profile.languages}</p>
+            </section>
+          )
+        }
+      </aside>
+    </div>
+  </article>
+</div>
+
+<script>
+  // Tailoring for one application: keyword highlight, headline override, edit mode, shareable address.
+  const root = document.querySelector<HTMLElement>('[data-cv]');
+  const hlInput = document.querySelector<HTMLInputElement>('[data-hl-input]');
+  const titleInput = document.querySelector<HTMLInputElement>('[data-title-input]');
+  const editToggle = document.querySelector<HTMLInputElement>('[data-edit-toggle]');
+  const headline = document.querySelector<HTMLElement>('[data-headline]');
+  const defaultHeadline = headline?.textContent ?? '';
+
+  const escape = (word: string) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  function clearMarks() {
+    root?.querySelectorAll('mark.kw').forEach((mark) => mark.replaceWith(document.createTextNode(mark.textContent ?? '')));
+    root?.normalize();
+  }
+
+  function highlight(words: string[]) {
+    clearMarks();
+    const list = [...root!.querySelectorAll<HTMLElement>('[data-skill]')];
+    // matching skills first inside each group, otherwise the original order
+    for (const ul of new Set(list.map((li) => li.parentElement!))) {
+      const items = [...ul.children] as HTMLElement[];
+      const matches = (li: HTMLElement) => words.some((w) => li.textContent!.toLowerCase().includes(w.toLowerCase()));
+      items
+        .sort((a, b) => Number(matches(b)) - Number(matches(a)) || Number(a.dataset.order) - Number(b.dataset.order))
+        .forEach((li) => ul.appendChild(li));
+    }
+    if (words.length === 0) return;
+    const pattern = new RegExp(`(?<![\\p{L}\\d])(${words.map(escape).join('|')})(?![\\p{L}\\d])`, 'giu');
+    for (const container of root!.querySelectorAll<HTMLElement>('[data-hl]')) {
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      const nodes: Text[] = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+      for (const node of nodes) {
+        const text = node.textContent ?? '';
+        if (!pattern.test(text)) continue;
+        pattern.lastIndex = 0;
+        const fragment = document.createDocumentFragment();
+        let last = 0;
+        for (const match of text.matchAll(pattern)) {
+          fragment.append(text.slice(last, match.index));
+          const mark = document.createElement('mark');
+          mark.className = 'kw';
+          mark.textContent = match[0];
+          fragment.append(mark);
+          last = match.index! + match[0].length;
+        }
+        fragment.append(text.slice(last));
+        node.replaceWith(fragment);
+      }
+    }
+  }
+
+  const words = () =>
+    (hlInput?.value ?? '')
+      .split(',')
+      .map((w) => w.trim())
+      .filter(Boolean);
+
+  function sync() {
+    const params = new URLSearchParams();
+    if (hlInput?.value.trim()) params.set('hl', words().join(','));
+    if (titleInput?.value.trim()) params.set('title', titleInput.value.trim());
+    const query = params.toString();
+    history.replaceState(null, '', `${location.pathname}${query ? `?${query}` : ''}`);
+    document.querySelectorAll<HTMLAnchorElement>('[data-variant-link]').forEach((a) => {
+      a.search = query ? `?${query}` : '';
+    });
+  }
+
+  function apply() {
+    if (headline) headline.textContent = titleInput?.value.trim() || defaultHeadline;
+    if (!editToggle?.checked) highlight(words());
+    sync();
+  }
+
+  const params = new URLSearchParams(location.search);
+  if (hlInput) hlInput.value = params.get('hl') ?? '';
+  if (titleInput) titleInput.value = params.get('title') ?? '';
+  apply();
+
+  hlInput?.addEventListener('input', apply);
+  titleInput?.addEventListener('input', apply);
+  editToggle?.addEventListener('change', () => {
+    const on = editToggle.checked;
+    if (on) clearMarks();
+    root?.classList.toggle('editing', on);
+    document.querySelectorAll<HTMLElement>('[data-edit]').forEach((el) => {
+      if (on) el.setAttribute('contenteditable', 'true');
+      else el.removeAttribute('contenteditable');
+    });
+    if (!on) highlight(words());
+  });
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  /* ---------- screen: a grey desk with an A4 sheet on it ---------- */
+  :global(body) {
+    background: #e7e9ee;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid var(--color-grid);
+    font-size: 14px;
+  }
+  .tb-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .tb-row + .tb-row {
+    margin-top: 10px;
+  }
+  .tb-title span {
+    color: var(--color-mute);
+  }
+  .tb-variants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-right: auto;
+  }
+  .tb-variants a {
+    padding: 8px 12px;
+    border: 1px solid var(--color-ink);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tb-variants a[aria-current='page'] {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .tb-print {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    background: var(--color-blue);
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .tb-tailor label {
+    display: grid;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--color-mute);
+  }
+  .tb-tailor .grow {
+    flex: 1 1 260px;
+  }
+  .tb-tailor input[type='text'] {
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1px solid var(--color-ink);
+    font: inherit;
+    font-size: 14px;
+    color: var(--color-ink);
+    background: #fff;
+  }
+  .tb-tailor .check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    color: var(--color-ink);
+    font-size: 14px;
+  }
+  .tb-back {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: underline;
+  }
+  .tb-hint {
+    max-width: 1100px;
+    margin: 10px auto 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-mute);
+  }
+  .tb-hint code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    overflow-wrap: anywhere;
+  }
+
+  .sheet {
+    width: 210mm;
+    max-width: 100%;
+    min-height: 297mm;
+    margin: 24px auto;
+    padding: 14mm;
+    background: #fff;
+    box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ---------- the CV itself ---------- */
+  .cv {
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 9.6pt;
+    line-height: 1.42;
+  }
+  .cv a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px 24px;
+    padding-bottom: 10px;
+    border-bottom: 2.5px solid var(--color-ink);
+  }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 27pt;
+    line-height: 0.95;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+  }
+  .headline {
+    margin-top: 6px;
+    font-size: 12pt;
+    font-weight: 600;
+  }
+  .contact {
+    display: grid;
+    gap: 1px;
+    font-size: 9pt;
+    text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .contact .open {
+    margin-top: 4px;
+    font-weight: 700;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 52mm;
+    gap: 6mm 9mm;
+    margin-top: 12px;
+  }
+  h2 {
+    margin: 0 0 6px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--color-ink);
+    font-size: 8.4pt;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  section + section {
+    margin-top: 12px;
+  }
+  h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .job + .job,
+  .project + .project {
+    margin-top: 9px;
+  }
+  .job,
+  .project,
+  .skill-group {
+    break-inside: avoid;
+  }
+  .job-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .period {
+    flex: none;
+    font-size: 8.8pt;
+    color: var(--color-mute);
+  }
+  .context {
+    color: var(--color-mute);
+  }
+  .bullets {
+    margin: 3px 0 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .bullets li {
+    position: relative;
+    padding-left: 10px;
+  }
+  .bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 4px;
+    height: 4px;
+    background: var(--color-ink);
+  }
+  .stack {
+    margin-top: 1px;
+    font-size: 8.6pt;
+    color: var(--color-mute);
+  }
+  .repo {
+    margin-top: 1px;
+    font-size: 8.8pt;
+  }
+  .skill-group + .skill-group {
+    margin-top: 7px;
+  }
+  .skill-group h3 {
+    font-size: 8.8pt;
+    font-weight: 700;
+    color: var(--color-mute);
+  }
+  .skills {
+    margin: 1px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .school {
+    font-weight: 700;
+  }
+  .cv :global(strong) {
+    font-weight: 700;
+  }
+  /* keywords picked from the job advertisement: shaded on screen, plain bold on paper */
+  .cv :global(mark.kw) {
+    padding: 0 1px;
+    background: #ffe9a6;
+    color: inherit;
+    font-weight: 700;
+  }
+  .cv.editing [data-edit] {
+    outline: 1px dashed var(--color-blue);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 820px) {
+    .sheet {
+      margin: 0;
+      padding: 20px 16px;
+      box-shadow: none;
+    }
+    .head {
+      flex-direction: column;
+      align-items: start;
+    }
+    .contact {
+      text-align: left;
+    }
+    .cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ---------- paper ---------- */
+  @page {
+    size: A4;
+    margin: 12mm 13mm;
+  }
+  @media print {
+    :global(html),
+    :global(body) {
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toolbar {
+      display: none;
+    }
+    .sheet {
+      width: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+    .cols {
+      grid-template-columns: minmax(0, 1fr) 52mm;
+    }
+    .head {
+      flex-direction: row;
+      align-items: end;
+    }
+    .contact {
+      text-align: right;
+    }
+    .cv :global(mark.kw) {
+      background: none;
+    }
+    .cv a {
+      color: inherit;
+    }
+  }
+</style>
