@@ -1,11 +1,30 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/hero/Hero.astro';
+import ProjectIndex from '../components/projects/ProjectIndex.astro';
+import ProjectSection from '../components/projects/ProjectSection.astro';
+import StackSection from '../components/about/StackSection.astro';
+import About from '../components/about/About.astro';
+import ResumeCta from '../components/resume/ResumeCta.astro';
+import Contact from '../components/contact/Contact.astro';
+import { profile } from '../data/profile';
+import { projects } from '../data/projects';
+import { homeJsonLd } from '../utils/seo';
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title={`${profile.name} — ${profile.title}`}
+  description="Full-stack engineer: Java / Spring Boot, TypeScript / Next.js, Python / FastAPI, PostgreSQL / PostGIS, source-grounded AI. Projects: ResearchHub, parcel analysis, obiekt.io (in development)."
+  path="/"
+  jsonLd={homeJsonLd()}
+>
+  <Hero />
+  <section id="projects" aria-labelledby="selected-work">
+    <ProjectIndex />
+    {projects.map((project, index) => <ProjectSection project={project} index={index} />)}
+  </section>
+  <StackSection />
+  <About />
+  <ResumeCta />
+  <Contact />
+</BaseLayout>
