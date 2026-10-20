@@ -1,0 +1,710 @@
+---
+// The numbered case-study sections. Only sections with content are rendered (numbers stay consecutive).
+// The structure follows the approved template: overview, problem, product, contribution, architecture,
+// challenges, decisions, stack, quality, screenshots, source, what I learned.
+// Projects are not deployed, so there is no demo section: screenshots and the source repository carry it.
+import type { Project } from '../../data/types';
+import { accentOf, accentStyle } from '../../utils/accent';
+import { getImage } from '../../utils/images';
+import { SHOW_PLACEHOLDERS } from '../../utils/placeholders';
+import ArchitectureDiagram from './ArchitectureDiagram.astro';
+import ProjectShot from '../projects/ProjectShot.astro';
+import NumberedSection from '../ui/NumberedSection.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const cs = project.caseStudy;
+const accent = accentOf(project.accent);
+const repoLabel = (url: string) => new URL(url).pathname.replace(/^\//, ''); // "owner/repo"
+
+// ---- decide which sections exist
+const contributionAreas = (cs?.contribution?.areas ?? []).filter((a) => a.text || SHOW_PLACEHOLDERS);
+const showContribution = Boolean(cs?.contribution?.summary) || contributionAreas.length > 0;
+const challenges = cs?.challenges ?? project.highlights;
+const challengesTitle = cs?.challenges ? (project.inDevelopment ? 'Engineering challenges ahead' : 'Key engineering challenges') : 'Engineering highlights';
+const showTradeoff = (cs?.decisions ?? []).some((d) => d.tradeoff) || SHOW_PLACEHOLDERS;
+const quality = cs?.quality
+  ? { ...cs.quality, facts: cs.quality.facts.filter((f) => f.value || SHOW_PLACEHOLDERS) }
+  : undefined;
+const screenshots = (project.screenshots ?? []).map((s) => ({ ...s, image: getImage(s.src) })).filter((s) => s.image);
+const showScreenshots = screenshots.length > 0 || (SHOW_PLACEHOLDERS && Boolean(cs));
+const showLearned = (cs?.learned?.length ?? 0) > 0 || (SHOW_PLACEHOLDERS && Boolean(cs));
+const sourceUrl = project.repository.url;
+
+interface OverviewFact {
+  label: string;
+  text?: string;
+  placeholder?: string;
+}
+const overviewFacts: OverviewFact[] = [];
+if (project.status) overviewFacts.push({ label: 'Status', text: project.status });
+overviewFacts.push({
+  label: 'Source',
+  text: project.repository.visibility === 'private' ? 'Private repository' : 'Public repository',
+});
+if (SHOW_PLACEHOLDERS) {
+  overviewFacts.push({ label: 'Team', placeholder: '[SOLO / TEAM — TO BE FILLED]' });
+  overviewFacts.push({ label: 'Timeline', placeholder: '[TO BE FILLED]' });
+}
+
+const list = [
+  { key: 'overview', title: 'Project overview', show: true },
+  { key: 'problem', title: 'Problem', show: Boolean(cs?.problem) },
+  { key: 'product', title: 'Product and users', show: Boolean(cs?.product) },
+  { key: 'roadmap', title: 'What is coming', show: (cs?.roadmap?.phases.length ?? 0) > 0 },
+  { key: 'contribution', title: 'My contribution', show: showContribution },
+  { key: 'architecture', title: 'Architecture', show: Boolean(cs?.architecture) },
+  { key: 'challenges', title: challengesTitle, show: challenges.length > 0 },
+  { key: 'decisions', title: 'Technical decisions and trade-offs', show: (cs?.decisions?.length ?? 0) > 0 },
+  { key: 'stack', title: 'Stack', show: true },
+  { key: 'quality', title: 'Testing and quality', show: Boolean(quality) },
+  { key: 'screenshots', title: 'Screenshots', show: showScreenshots },
+  { key: 'source', title: 'Source code', show: true },
+  { key: 'learned', title: 'What I learned', show: showLearned },
+]
+  .filter((s) => s.show)
+  .map((s, i) => ({
+    ...s,
+    number: String(i + 1).padStart(2, '0'),
+    // the screenshots section keeps a stable anchor, so the homepage can link straight to it
+    id: s.key === 'screenshots' ? 'screenshots' : `s${String(i + 1).padStart(2, '0')}`,
+  }));
+---
+
+{
+  list.map((section) => (
+    <NumberedSection
+      id={section.id}
+      number={section.number}
+      title={section.title}
+      tight={['challenges', 'decisions', 'learned'].includes(section.key)}
+      accentStyle={accentStyle(project.accent)}
+    >
+        {section.key === 'overview' && (
+          <>
+            <p class="lead">{project.overview.lead}</p>
+            <dl class="facts two-col">
+              {overviewFacts.map((fact) => (
+                <div class="fact">
+                  <dt class="lbl mute">{fact.label}</dt>
+                  <dd>{fact.text ?? <span class="ph">{fact.placeholder}</span>}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+
+        {section.key === 'problem' && <p class="p">{cs?.problem}</p>}
+
+        {section.key === 'product' && cs?.product && (
+          <>
+            <p class="p intro">
+              <strong>For:</strong> {cs.product.audience}. {cs.product.lead}
+            </p>
+            <ul class="tl">{cs.product.capabilities.map((item) => <li>{item}</li>)}</ul>
+          </>
+        )}
+
+        {section.key === 'roadmap' && cs?.roadmap && (
+          <>
+            {cs.roadmap.summary && <p class="p intro">{cs.roadmap.summary}</p>}
+            <dl class="facts">
+              {cs.roadmap.phases.map((phase) => (
+                <div class="fact">
+                  <dt class="lbl mute">{{ done: 'Done', next: 'Next', later: 'Later' }[phase.state]} · {phase.label}</dt>
+                  <dd>{phase.text}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+
+        {section.key === 'contribution' && (
+          <>
+            {cs?.contribution?.summary ? (
+              <p class="p intro">{cs.contribution.summary}</p>
+            ) : (
+              SHOW_PLACEHOLDERS && (
+                <p class="intro intro-ph">
+                  <span class="ph">[TO BE FILLED — state plainly what I designed, built and decided]</span>
+                </p>
+              )
+            )}
+            <dl class="facts">
+              {contributionAreas.map((area) => (
+                <div class="fact">
+                  <dt class="lbl mute">{area.label}</dt>
+                  <dd>{area.text ?? <span class="ph">[TO BE FILLED]</span>}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )}
+
+        {section.key === 'architecture' && cs?.architecture && (
+          <>
+            <p class="p intro-wide">{cs.architecture.summary}</p>
+            <ArchitectureDiagram nodes={cs.architecture.nodes} edges={cs.architecture.edges} legend={cs.architecture.legend} />
+            {cs.architecture.responsibilities ? (
+              <p class="p note">{cs.architecture.responsibilities}</p>
+            ) : (
+              SHOW_PLACEHOLDERS &&
+              cs.architecture.todo && (
+                <p class="note">
+                  <span class="ph">{cs.architecture.todo}</span>
+                </p>
+              )
+            )}
+          </>
+        )}
+
+        {section.key === 'challenges' && (
+          <ol class="statements two-col" role="list">
+            {challenges.map((item) => (
+              <li class="hl">
+                <span class="hm" />
+                <div>
+                  <p class="ht">{item.title}</p>
+                  <p class="hd">{item.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {section.key === 'decisions' && cs?.decisions && (
+          <table class="decisions">
+            <thead>
+              <tr>
+                <th scope="col">Decision</th>
+                <th scope="col">Why</th>
+                {showTradeoff && <th scope="col">Trade-off</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {cs.decisions.map((row) => (
+                <tr>
+                  <td>{row.decision}</td>
+                  <td data-label="Why">{row.why}</td>
+                  {showTradeoff && <td data-label="Trade-off">{row.tradeoff ?? <span class="ph">[TO BE FILLED]</span>}</td>}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {section.key === 'stack' && (
+          <div class="stack-groups">
+            {project.stack.map((group) => (
+              <div class="tg">
+                <p class="tg-label lbl">{group.label}</p>
+                <ul class="tl tl-inline">{group.items.map((item) => <li>{item}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {section.key === 'quality' && quality && (
+          <>
+            <p class="p intro intro-quality">{quality.summary}</p>
+            {quality.facts.length > 0 && (
+              <dl class="facts">
+                {quality.facts.map((fact) => (
+                  <div class="fact">
+                    <dt class="lbl mute">{fact.label}</dt>
+                    <dd>{fact.value ?? <span class="ph">{fact.todo ?? '[TO BE FILLED]'}</span>}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </>
+        )}
+
+        {section.key === 'screenshots' && (
+          <>
+          <p class="p intro">
+            Pinned screenshots from a local run of the project. It is not deployed, so there is no live demo.
+          </p>
+          <div class="shots">
+            {screenshots.length > 0
+              ? screenshots.map((shot, i) => (
+                  <figure class={i === 0 ? 'shot-wide' : 'shot-half'} style={`--acc:${accent.color};--soft:${accent.soft}`}>
+                    <div class="shot-box">
+                      <ProjectShot drawing="" image={shot.image} fit={shot.fit} alt={shot.alt} caption="" label="" />
+                    </div>
+                    {shot.caption && <figcaption class="shot-caption">{shot.caption}</figcaption>}
+                  </figure>
+                ))
+              : (
+                <>
+                  <figure class="shot-wide" style={`--acc:${accent.color};--soft:${accent.soft}`}>
+                    <div class="shot-box">
+                      <ProjectShot drawing="case-main" alt="" caption="[SCREENSHOT PLACEHOLDER — main workspace]" label="Placeholder for a main workspace screenshot — to be added" />
+                    </div>
+                  </figure>
+                  <figure class="shot-half" style={`--acc:${accent.color};--soft:${accent.soft}`}>
+                    <div class="shot-box">
+                      <ProjectShot drawing="case-citations" alt="" caption="[PLACEHOLDER — citations]" label="Placeholder for a citation view screenshot — to be added" />
+                    </div>
+                  </figure>
+                  <figure class="shot-half" style={`--acc:${accent.color};--soft:${accent.soft}`}>
+                    <div class="shot-box">
+                      <ProjectShot drawing="case-analysis" alt="" caption="[PLACEHOLDER — analysis]" label="Placeholder for an analysis view screenshot — to be added" />
+                    </div>
+                  </figure>
+                </>
+              )}
+          </div>
+          </>
+        )}
+
+        {section.key === 'source' && (
+          <div class="links">
+            {sourceUrl ? (
+              <a
+                class="lk lk-a"
+                href={sourceUrl}
+                rel="noopener"
+                target="_blank"
+                aria-label={`View ${project.shortTitle} source code on GitHub`}
+                style={`--acc:${accent.color};--on:${accent.on}`}
+              >
+                <span class="lk-title">Source on GitHub</span>
+                <small>{repoLabel(sourceUrl)}<br />Public repository</small>
+              </a>
+            ) : project.repository.visibility === 'private' ? (
+              <div class="lk lk-dashed">
+                <span class="lk-title">Source</span>
+                <small>Private repository.<br class="on-wide" /> No public link.</small>
+              </div>
+            ) : (
+              SHOW_PLACEHOLDERS && (
+                <div class="lk lk-dashed">
+                  <span class="lk-title">Source</span>
+                  <small><span class="ph">[ONLY IF PUBLIC]</span></small>
+                </div>
+              )
+            )}
+            <a class="lk" href="#top" aria-label={`Back to the top of this ${project.shortTitle} case study`}>
+              <span class="lk-title">Case study</span>
+              <small><span class="on-wide">This page<br /></span>igorkadziela.dev/projects/{project.slug}</small>
+            </a>
+            <div class="lk lk-dashed">
+              <span class="lk-title">{project.inDevelopment ? 'In development' : 'Not deployed'}</span>
+              <small>
+                {project.inDevelopment
+                  ? 'No demo yet. The repository is at its foundation stage.'
+                  : 'No live demo, to avoid hosting costs. See the screenshots and the source.'}
+              </small>
+            </div>
+          </div>
+        )}
+
+        {section.key === 'learned' && (
+          <ol class="statements" role="list">
+            {(cs?.learned ?? [1, 2, 3].map((n) => `[LESSON ${n} — TO BE FILLED]`)).map((lesson) => (
+              <li class="hl">
+                <span class="hm" />
+                <div>{cs?.learned ? <p class="hd lesson">{lesson}</p> : <span class="ph">{lesson}</span>}</div>
+              </li>
+            ))}
+          </ol>
+        )}
+    </NumberedSection>
+  ))
+}
+
+<style>
+  /* Section content. The numbered wrapper lives in ui/NumberedSection.astro. */
+  .lead {
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-body);
+  }
+  .intro {
+    margin-bottom: 18px;
+  }
+  .intro.intro-ph {
+    margin-bottom: 14px;
+  }
+  .intro.intro-quality {
+    margin-bottom: 16px;
+  }
+  .intro strong {
+    color: var(--color-ink);
+  }
+  .intro-wide {
+    margin-bottom: 26px;
+  }
+  .note {
+    margin-top: 22px;
+  }
+
+  .facts {
+    margin-top: 0;
+  }
+  .lead + .facts {
+    margin-top: 22px;
+  }
+  .facts.two-col {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .fact {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .facts:not(.two-col) .fact:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .fact dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .tl li {
+    padding: 6px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .tl:not(.tl-inline) li:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .tl-inline {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .tl-inline li {
+    display: inline;
+    padding: 0;
+    border: 0;
+  }
+  .tl-inline li + li::before {
+    content: ' · ';
+  }
+  .tg + .tg {
+    margin-top: 18px;
+  }
+
+  .statements {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .hl {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    padding: 15px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .hm {
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    background: var(--acc);
+  }
+  .ht {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .hd {
+    margin-top: 3px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--color-body);
+  }
+  .lesson {
+    margin-top: 0;
+  }
+  .also {
+    padding: 14px 0 0;
+    border-top: 1px solid var(--color-grid);
+  }
+
+  /* decisions: a table on desktop, stacked blocks on phones */
+  .decisions {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .decisions thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .decisions tr {
+    display: block;
+    padding: 16px 0;
+    border-top: 2px solid var(--color-ink);
+  }
+  .decisions td {
+    display: block;
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 14.5px;
+    line-height: 1.4;
+    color: var(--color-body);
+  }
+  .decisions td:first-child {
+    padding: 0 0 8px;
+    border: 0;
+    color: var(--color-ink);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .decisions td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-mute);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+  .decisions tr:last-child td:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+
+  /* screenshots */
+  .shot-wide,
+  .shot-half {
+    margin: 0 0 14px;
+  }
+  .shot-box {
+    position: relative;
+    height: 190px;
+  }
+  .shot-half:last-child {
+    margin-bottom: 0;
+  }
+  .shot-caption {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-body);
+  }
+
+  /* links */
+  .links {
+    display: block;
+  }
+  .lk {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 64px;
+    margin-bottom: 12px;
+    padding: 10px 16px;
+    border: 2px solid var(--color-ink);
+    min-width: 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .lk small {
+    display: block;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.45;
+    text-transform: none;
+    overflow-wrap: anywhere;
+  }
+  .lk-a {
+    background: var(--acc);
+    border-color: var(--acc);
+    color: var(--on);
+  }
+  .lk-dashed {
+    border-style: dashed;
+    border-color: #8d96a6;
+  }
+
+  /* =====================================================================
+     Tablet
+     ===================================================================== */
+  @media (min-width: 768px) {
+    .stack-groups {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .tg + .tg {
+      margin-top: 0;
+    }
+  }
+
+  /* =====================================================================
+     Desktop (design: 1360px site)
+     ===================================================================== */
+  @media (min-width: 1200px) {
+    .lead {
+      font-size: max(16px, calc(20 * var(--u)));
+    }
+    .p {
+      max-width: calc(600 * var(--u));
+    }
+    .intro {
+      margin-bottom: 22px;
+    }
+    .intro.intro-ph {
+      margin-bottom: 18px;
+    }
+    .intro.intro-quality {
+      margin-bottom: 22px;
+    }
+    .intro-wide {
+      max-width: calc(600 * var(--u));
+      margin-bottom: 34px;
+    }
+    .note {
+      margin-top: 26px;
+    }
+    .lead + .facts {
+      margin-top: 28px;
+    }
+    .facts.two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 40px;
+    }
+    .two-col.statements {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 40px;
+    }
+    .fact {
+      padding: 14px 0;
+    }
+    .fact dd {
+      margin-top: 5px;
+    }
+    .hl {
+      grid-template-columns: 24px minmax(0, 1fr);
+      padding: 16px 0;
+    }
+
+    /* decisions as a real table */
+    .decisions thead {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+    }
+    .decisions tr {
+      display: table-row;
+      padding: 0;
+      border: 0;
+    }
+    .decisions th {
+      padding: 0 18px 12px 0;
+      border-bottom: 2px solid var(--color-ink);
+      color: var(--color-mute);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    .decisions td,
+    .decisions td:first-child {
+      display: table-cell;
+      padding: 16px 18px 16px 0;
+      border: 0;
+      border-bottom: 1px solid var(--color-grid);
+      vertical-align: top;
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: var(--color-body);
+    }
+    .decisions td:first-child {
+      width: 31%;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+    .decisions td[data-label]::before {
+      content: none;
+    }
+
+    .stack-groups {
+      gap: 24px;
+    }
+    .tg-label {
+      margin-bottom: 10px;
+      color: var(--color-mute);
+    }
+    .tl-inline {
+      margin-top: 0;
+    }
+    .tl-inline li {
+      display: block;
+      padding: 6px 0;
+      border-top: 1px solid var(--color-grid);
+    }
+    .tl-inline li:last-child {
+      border-bottom: 1px solid var(--color-grid);
+    }
+    .tl-inline li + li::before {
+      content: none;
+    }
+
+    .shots {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .shot-wide {
+      grid-column: 1 / -1;
+      margin: 0;
+    }
+    .shot-half {
+      margin: 0;
+    }
+    .shot-wide .shot-box {
+      height: 300px;
+    }
+    .shot-half .shot-box {
+      height: 200px;
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .lk {
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 150px;
+      margin: 0;
+      padding: 20px 18px;
+      border-width: 1px;
+      font-size: 12px;
+    }
+    .lk small {
+      font-size: 11px;
+      line-height: 1.5;
+    }
+  }
+</style>

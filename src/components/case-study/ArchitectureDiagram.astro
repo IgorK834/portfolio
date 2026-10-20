@@ -1,0 +1,234 @@
+---
+// A clean engineering diagram, not an illustration: node cards on a two-column grid joined by arrows.
+// Nodes and edges come from the project's case-study data. Solid arrows are documented relationships;
+// dashed arrows are still to be confirmed.
+import type { ArchitectureEdge, ArchitectureNode } from '../../data/types';
+
+interface Props {
+  nodes: ArchitectureNode[];
+  edges: ArchitectureEdge[];
+  legend: { full: string; short: string };
+}
+
+const { nodes, edges, legend } = Astro.props;
+const byId = (id: string) => nodes.find((n) => n.id === id)!;
+
+// Each edge sits in the gap cell between its two nodes: grid tracks are node, gap, node, gap, ...
+const placed = edges.map((edge) => {
+  const from = byId(edge.from);
+  const to = byId(edge.to);
+  const horizontal = from.row === to.row;
+  const forward = horizontal ? to.column > from.column : to.row > from.row;
+  return {
+    ...edge,
+    horizontal,
+    forward,
+    row: horizontal ? from.row * 2 + 1 : Math.min(from.row, to.row) * 2 + 2,
+    column: horizontal ? 2 : from.column * 2 + 1,
+  };
+});
+---
+
+<figure class="diagram">
+  <div class="grid">
+    {
+      nodes.map((node) => (
+        <div class="node" style={`grid-row:${node.row * 2 + 1};grid-column:${node.column * 2 + 1}`}>
+          <span>
+            <b>
+              {node.shortTitle ? (
+                <>
+                  <span class="on-wide">{node.title}</span>
+                  <span class="on-narrow">{node.shortTitle}</span>
+                </>
+              ) : (
+                node.title
+              )}
+            </b>
+            <span class="on-wide">{node.lines.map((line) => <><br />{line}</>)}</span>
+            <span class="on-narrow">{node.shortLines.map((line) => <><br />{line}</>)}</span>
+          </span>
+        </div>
+      ))
+    }
+    {
+      placed.map((edge) => (
+        <div
+          class:list={['edge', edge.horizontal ? 'h' : 'v', { dashed: edge.dashed, both: edge.both, back: !edge.forward }]}
+          style={`grid-row:${edge.row};grid-column:${edge.column}`}
+          aria-hidden="true"
+        >
+          <i class="line a" />
+          {edge.both && <i class="line b" />}
+          {edge.label && <span class="label">{edge.label}</span>}
+        </div>
+      ))
+    }
+  </div>
+  <figcaption class="legend">
+    <span class="on-wide">{legend.full}</span>
+    <span class="on-narrow">{legend.short}</span>
+  </figcaption>
+</figure>
+
+<style>
+  /* ---------- narrow: 127px cards, 40px gaps (design: 294px host) ---------- */
+  .diagram {
+    margin: 0;
+    min-height: 410px;
+  }
+  /* rows alternate: node row (84px) and gap row (44px) */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) calc(40 * var(--m)) minmax(0, 1fr);
+    grid-template-rows: 84px 44px 84px 44px 84px;
+  }
+  .node {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #fff;
+    border: 1px solid var(--color-ink);
+    border-top: 5px solid var(--acc);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .edge {
+    position: relative;
+    color: var(--color-ink);
+  }
+  .line {
+    position: absolute;
+    display: block;
+    background: currentColor;
+  }
+  /* horizontal edge: lines run left to right, head on the right (or left when reversed) */
+  .edge.h .line {
+    left: 0;
+    right: 1px;
+    height: 2px;
+    margin-top: -1px;
+  }
+  .edge.h .line.a {
+    top: 50%;
+  }
+  .edge.h.both .line.a {
+    top: 33.333%;
+  }
+  .edge.h.both .line.b {
+    top: 66.666%;
+  }
+  .edge.h .line::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 8px solid currentColor;
+  }
+  .edge.h .line.b {
+    left: 1px;
+    right: 0;
+  }
+  .edge.h .line.b::after,
+  .edge.h.back .line.a::after {
+    right: auto;
+    left: 0;
+    border-left: 0;
+    border-right: 8px solid currentColor;
+  }
+  .edge.h.back .line.a {
+    left: 1px;
+    right: 0;
+  }
+  /* vertical edge: a line down the middle, head at the bottom */
+  .edge.v .line {
+    left: 50%;
+    top: 0;
+    bottom: 1px;
+    width: 2px;
+    margin-left: -1px;
+  }
+  .edge.v .line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -3px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 8px solid currentColor;
+  }
+  .edge.v.back .line {
+    top: 1px;
+    bottom: 0;
+  }
+  .edge.v.back .line::after {
+    top: 0;
+    bottom: auto;
+    border-top: 0;
+    border-bottom: 8px solid currentColor;
+  }
+  .edge.dashed .line {
+    background: none;
+  }
+  .edge.dashed.v .line {
+    border-left: 2px dashed currentColor;
+    width: 0;
+    margin-left: -1px;
+  }
+  .edge.dashed.h .line {
+    border-top: 2px dashed currentColor;
+    height: 0;
+  }
+  .label {
+    display: none;
+  }
+
+  .legend {
+    margin-top: 22px;
+    color: var(--color-mute);
+    font-size: 12.5px;
+    line-height: 17px;
+  }
+
+  /* ---------- wide: 290px cards, 62px gaps (design: 642px host) ---------- */
+  @media (min-width: 1200px) {
+    .diagram {
+      min-height: 0;
+      height: calc(430 * var(--u));
+    }
+    .grid {
+      grid-template-columns: minmax(0, 1fr) calc(62 * var(--u)) minmax(0, 1fr);
+      grid-template-rows: calc(84 * var(--u)) calc(56 * var(--u)) calc(84 * var(--u)) calc(56 * var(--u)) calc(84 * var(--u));
+    }
+    .node {
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .label {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      margin-top: -28px;
+      text-align: center;
+      color: var(--color-mute);
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .edge.h.both .label {
+      top: 0;
+      margin-top: 2px;
+    }
+    .legend {
+      margin-top: 32px;
+      font-size: 13px;
+      line-height: 18px;
+    }
+  }
+</style>
