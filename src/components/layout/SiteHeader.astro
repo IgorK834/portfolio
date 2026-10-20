@@ -1,0 +1,327 @@
+---
+// Header + primary navigation.
+// Desktop: logo cell, four nav cells and a dark "Contact" cell on the architectural grid.
+// Tablet: logo + inline nav. Mobile: logo + Menu button opening a full-width list (needs JS; without JS the list is simply shown).
+const links = [
+  { href: '/#projects', label: 'Projects', number: '01', fill: 'var(--color-blue)', ink: '#fff' },
+  { href: '/#about', label: 'About', number: '02', fill: 'var(--color-red)', ink: 'var(--color-ink)' },
+  { href: '/#stack', label: 'Stack', number: '03', fill: 'var(--color-yellow)', ink: 'var(--color-ink)' },
+  { href: '/#resume', label: 'Resume', number: '04', fill: 'var(--color-ink)', ink: '#fff' },
+];
+---
+
+<header class="header" data-site-header>
+  <a class="logo" href="/" aria-label="Igor Kadziela — home">
+    <span class="mark disp" aria-hidden="true">IK</span>
+    <span class="logo-name lbl">Igor Kadziela</span>
+  </a>
+
+  <button class="toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+    <svg class="icon icon-open" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M2 5h18M2 11h18M2 17h18"></path></svg>
+    <svg class="icon icon-close" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M4 4l14 14M18 4L4 18"></path></svg>
+    <span data-nav-label>Menu</span>
+  </button>
+
+  <nav class="nav" id="site-nav" aria-label="Primary" data-site-nav>
+    <ul class="nav-list">
+      {
+        links.map((link) => (
+          <li>
+            <a class="nav-link" href={link.href} style={`--fill:${link.fill};--ink:${link.ink}`}>
+              <span class="nav-num disp" aria-hidden="true">{link.number}</span>
+              <span class="nav-label">{link.label}</span>
+              <svg class="nav-arrow" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"></path></svg>
+            </a>
+          </li>
+        ))
+      }
+      <li class="nav-contact">
+        <a class="nav-link" href="/#contact" style="--fill:var(--color-blue);--ink:#fff">
+          <span class="nav-num disp" aria-hidden="true">05</span>
+          <span class="nav-label">Contact</span>
+          <svg class="nav-arrow" width="22" height="22" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 14h19M15 6l8 8-8 8"></path></svg>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  // The only client-side script on the site: open/close the mobile menu.
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const button = header?.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const nav = header?.querySelector<HTMLElement>('[data-site-nav]');
+  const label = button?.querySelector<HTMLElement>('[data-nav-label]');
+
+  if (header && button && nav) {
+    const setOpen = (open: boolean) => {
+      button.setAttribute('aria-expanded', String(open));
+      header.toggleAttribute('data-open', open);
+      if (label) label.textContent = open ? 'Close' : 'Menu';
+    };
+    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    nav.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && header.hasAttribute('data-open')) {
+        setOpen(false);
+        button.focus();
+      }
+    });
+    matchMedia('(min-width: 768px)').addEventListener('change', (event) => event.matches && setOpen(false));
+  }
+</script>
+
+<style>
+  /* ---------- mobile (design: 390px) ---------- */
+  .header {
+    position: relative;
+    z-index: 30;
+    height: 64px;
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  .mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin-left: calc((var(--rail) - 38px) / 2);
+    background: var(--color-ink);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .logo-name {
+    margin-left: calc((var(--rail) - 38px) / 2 + 20px);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .toggle {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    height: 100%;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 12px;
+    background: none;
+    border: 0;
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  :global(.js) .toggle {
+    display: flex;
+  }
+  .icon-close,
+  .header[data-open] .icon-open {
+    display: none;
+  }
+  .header[data-open] .icon-close {
+    display: block;
+  }
+
+  .nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 1px);
+    z-index: 40;
+    background: #fff;
+    border-bottom: 2px solid var(--color-ink);
+    box-shadow: 0 34px 40px -24px rgba(23, 25, 29, 0.4);
+  }
+  /* without JS the list is shown in the page flow instead of as an overlay */
+  :global(html:not(.js)) .nav {
+    position: static;
+    box-shadow: none;
+  }
+  :global(.js) .nav {
+    display: none;
+  }
+  :global(.js) .header[data-open] .nav {
+    display: block;
+  }
+  .nav-link {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr) var(--rail);
+    align-items: center;
+    min-height: 76px;
+    border-top: 1px solid var(--color-grid);
+    color: var(--color-ink);
+    transition: color 0.2s var(--ease);
+  }
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s var(--ease);
+  }
+  .nav-link:hover::before,
+  .nav-link:focus-visible::before,
+  .nav-link:active::before {
+    transform: scaleX(1);
+  }
+  .nav-link:hover,
+  .nav-link:focus-visible,
+  .nav-link:active {
+    color: var(--ink);
+  }
+  .nav-num {
+    font-size: 20px;
+    text-align: center;
+  }
+  .nav-label {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 34px;
+    line-height: 0.92;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+  }
+  .nav-arrow {
+    justify-self: center;
+  }
+
+  /* ---------- tablet: inline navigation ---------- */
+  @media (min-width: 768px) {
+    .header {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+    }
+    .toggle,
+    :global(.js) .toggle {
+      display: none;
+    }
+    .nav,
+    :global(.js) .nav {
+      position: static;
+      display: block;
+      background: none;
+      border: 0;
+      box-shadow: none;
+    }
+    .nav-list {
+      display: flex;
+      height: 100%;
+    }
+    .nav-list > li {
+      display: flex;
+    }
+    .nav-link {
+      display: flex;
+      min-height: 0;
+      padding: 0 16px;
+      border-top: 0;
+    }
+    .nav-link::before {
+      transform: translateY(101%);
+      transform-origin: center;
+      transition: transform 0.22s var(--ease);
+    }
+    .nav-link:hover::before,
+    .nav-link:focus-visible::before {
+      transform: translateY(0);
+    }
+    .nav-num,
+    .nav-arrow {
+      display: none;
+    }
+    .nav-label {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      line-height: 1.4;
+    }
+    .nav-contact .nav-link {
+      background: var(--color-ink);
+      color: #fff;
+      justify-content: center;
+    }
+    .nav-contact .nav-link:hover,
+    .nav-contact .nav-link:focus-visible {
+      color: #fff;
+    }
+  }
+
+  /* below ~330px the name runs into the MENU button: the monogram link keeps its accessible label */
+  @media (max-width: 329px) {
+    .logo-name {
+      display: none;
+    }
+  }
+
+  /* the name would wrap next to the inline navigation on narrow tablets: the monogram link keeps its label */
+  @media (min-width: 768px) and (max-width: 959px) {
+    .logo-name {
+      display: none;
+    }
+  }
+  @media (min-width: 960px) {
+    .nav-link {
+      padding: 0 22px;
+    }
+  }
+
+  /* ---------- desktop: the architectural grid ---------- */
+  @media (min-width: 1200px) {
+    .header {
+      display: grid;
+      grid-template-columns: var(--cols);
+      height: calc(76 * var(--u));
+    }
+    .logo {
+      grid-column: 1;
+      gap: calc(14 * var(--u));
+      padding: 0 calc(44 * var(--u));
+    }
+    .mark {
+      width: calc(40 * var(--u));
+      height: calc(40 * var(--u));
+      margin: 0;
+      font-size: calc(19 * var(--u));
+    }
+    .logo-name {
+      margin: 0;
+    }
+    .nav {
+      grid-column: 3 / 6;
+    }
+    .nav-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1.1675fr)) minmax(0, 0.98fr);
+    }
+    .nav-list > li {
+      min-width: 0;
+    }
+    .nav-link {
+      width: 100%;
+      padding: 0 calc(26 * var(--u));
+    }
+    .nav-label {
+      font-size: max(11.5px, calc(12.5 * var(--u)));
+    }
+  }
+</style>

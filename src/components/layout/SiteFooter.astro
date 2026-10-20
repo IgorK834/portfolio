@@ -1,0 +1,149 @@
+---
+import { profile } from '../../data/profile';
+
+const year = new Date().getFullYear();
+const links = [
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#about', label: 'About' },
+  { href: '/#stack', label: 'Stack' },
+  { href: '/#resume', label: 'Resume' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<footer class="footer">
+  <p class="copy lbl">© {year} {profile.name}</p>
+  <nav class="footer-nav" aria-label="Footer">
+    <ul class="lbl">
+      {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+    </ul>
+  </nav>
+  <a class="top" href="#top">
+    <span class="top-label lbl">Back to top</span>
+    <svg class="top-up" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M8 14V3M3 8l5-5 5 5"></path></svg>
+    <svg class="top-up-large" width="24" height="24" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M14 25V5M6 13l8-8 8 8"></path></svg>
+  </a>
+</footer>
+
+<style>
+  /* ---------- mobile ---------- */
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 28px 20px 40px;
+    border-top: 1px solid var(--color-grid);
+    background: #fff;
+  }
+  .copy {
+    font-size: 11px;
+  }
+  .tagline {
+    margin-top: 6px;
+    color: var(--color-mute);
+    font-size: 14px;
+  }
+  .footer-nav {
+    margin-top: 18px;
+  }
+  .footer-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+  }
+  .footer-nav a {
+    display: inline-block;
+    padding: 10px 0;
+  }
+  .top {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 12px 0;
+  }
+  .top-up-large {
+    display: none;
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width: 1200px) {
+    .footer {
+      display: grid;
+      grid-template-columns: var(--cols);
+      grid-template-rows: auto;
+      min-height: calc(88 * var(--u));
+      padding: 0;
+      background: transparent;
+    }
+    .copy {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      padding: 0 calc(44 * var(--u));
+    }
+    .tagline {
+      grid-column: 3 / 5;
+      grid-row: 1;
+      align-self: center;
+      margin: 0;
+      padding-left: calc(44 * var(--u));
+    }
+    .footer-nav {
+      grid-column: 4 / 5;
+      grid-row: 1;
+      align-self: center;
+      justify-self: end;
+      margin: 0;
+      padding-right: calc(44 * var(--u));
+    }
+    .footer-nav ul {
+      flex-wrap: nowrap;
+      gap: 22px;
+    }
+    .footer-nav a {
+      /* 16px-tall text links are too small to tap: grow the hit area, the row stays centred */
+      padding: 12px 0;
+    }
+    .top {
+      grid-column: 5;
+      grid-row: 1;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      min-height: calc(88 * var(--u));
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      transition: color 0.2s var(--ease);
+    }
+    .top::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--color-blue);
+      transform: translateX(-101%);
+      transition: transform 0.26s var(--ease);
+    }
+    .top:hover::before,
+    .top:focus-visible::before {
+      transform: translateX(0);
+    }
+    .top:hover,
+    .top:focus-visible {
+      color: #fff;
+    }
+    .top-label,
+    .top-up {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .top-up-large {
+      display: block;
+    }
+  }
+</style>
