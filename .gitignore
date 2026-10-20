@@ -12,19 +12,55 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
 # environment variables
 .env
-.env.production
+.env.*
+!.env.example
+
+# keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
 
 # macOS-specific files
 .DS_Store
+._*
 
 # jetbrains setting folder
 .idea/
+
+# vscode: keep shared config, ignore personal settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# claude code local settings and worktrees
+.claude/settings.local.json
+.claude/worktrees/
+
+# editor swap and backup files
+*.swp
+*.swo
+*~
+
+# tool caches
+*.tsbuildinfo
+.eslintcache
+.cache/
 
 # wrangler files
 .wrangler
 .dev.vars*
 !.dev.vars.example
-!.env.example
+
+# visual regression output + generated design reference
+visual-report/
+design/reference/
+test-results/
+playwright-report/
+
+# tailored CV exports (npm run cv:pdf -- <variant>)
+cv-exports/
