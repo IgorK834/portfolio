@@ -1,0 +1,158 @@
+---
+// A project screenshot frame. Shows the real image when one exists in src/assets/, otherwise the
+// design's wireframe stand-in (drawn as scalable SVG from geometry measured out of the design).
+// Grayscale at rest; the accent colour comes in on hover.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { wireframes, type Wireframe } from './wireframes';
+
+interface Props {
+  /** Wireframe set, e.g. "home-workspace" (resolves "-wide" and "-narrow" drawings). */
+  drawing: string;
+  /** Real screenshot, when available. */
+  image?: ImageMetadata;
+  alt: string;
+  /** Text of the caption bar (wireframe only). */
+  caption: string;
+  /** Accessible name of the wireframe. */
+  label: string;
+  /** "contain" shows the whole image (logos, banners) instead of cropping it. */
+  fit?: 'cover' | 'contain';
+}
+
+const { drawing, image, alt, caption, label, fit = 'cover' } = Astro.props;
+const wide = wireframes[`${drawing}-wide`];
+const narrow = wireframes[`${drawing}-narrow`];
+
+const drawings: { name: string; frame: Wireframe }[] = [
+  { name: 'wide', frame: wide },
+  { name: 'narrow', frame: narrow },
+].filter((d): d is { name: string; frame: Wireframe } => Boolean(d.frame));
+---
+
+<div class:list={['shot', { contain: image && fit === 'contain' }]} role={image ? undefined : 'img'} aria-label={image ? undefined : label}>
+  <div class="in">
+    {
+      image ? (
+        <Image src={image} alt={alt} widths={[334, 668, 640, 1280]} sizes="(min-width: 1200px) 640px, 334px" loading="lazy" />
+      ) : (
+        drawings.map(({ name, frame }) => (
+          <svg
+            class={name}
+            viewBox={`0 0 ${frame.w} ${frame.h}`}
+            preserveAspectRatio="xMidYMin slice"
+            aria-hidden="true"
+            focusable="false"
+          >
+            {frame.rects.map(([kind, x, y, w, h]) =>
+              kind === 'p' ? (
+                <rect class="p" x={x + 0.5} y={y + 0.5} width={w - 1} height={h - 1} />
+              ) : (
+                <rect class={kind} x={x} y={y} width={w} height={h} />
+              ),
+            )}
+          </svg>
+        ))
+      )
+    }
+  </div>
+  {!image && <div class="cap">{caption}</div>}
+</div>
+
+<style>
+  .shot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--wire-bg);
+    border: 1px solid var(--wire-line);
+    box-shadow: 0 22px 44px -26px rgba(23, 25, 29, 0.5);
+    transition: background 0.3s var(--ease);
+  }
+  .shot:hover {
+    background: var(--soft);
+  }
+  .in {
+    position: absolute;
+    inset: 0;
+  }
+  /* subtle crop movement on hover (not on phones, as in the design) */
+  @media (min-width: 768px) {
+    .in {
+      transform: scale(1.02);
+      transition: transform 0.45s var(--ease);
+    }
+    .shot:hover .in {
+      transform: scale(1.05) translate(-4px, -3px);
+    }
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .b {
+    fill: var(--wire-block);
+  }
+  .h {
+    fill: var(--wire-accent);
+    transition: fill 0.25s var(--ease);
+  }
+  .shot:hover .h {
+    fill: var(--acc);
+  }
+  .p {
+    fill: #fff;
+    stroke: var(--wire-line);
+  }
+  .in :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: filter 0.3s var(--ease);
+  }
+  .shot:hover .in :global(img) {
+    filter: none;
+  }
+  /* whole-image frames (logos, banners): paper background, nothing cropped */
+  .shot.contain,
+  .shot.contain:hover {
+    background: #fff;
+  }
+  .shot.contain .in :global(img) {
+    object-fit: contain;
+  }
+  .cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 8px 12px;
+    background: #fff;
+    border-top: 1px solid var(--wire-line);
+    color: var(--wire-note);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    line-height: 1.3;
+  }
+
+  /* the narrow drawing on small screens, the wide one on desktop */
+  .wide {
+    display: none;
+  }
+  @media (min-width: 1200px) {
+    .wide {
+      display: block;
+    }
+    .narrow {
+      display: none;
+    }
+    .cap {
+      padding: 9px 14px;
+      font-size: 11px;
+    }
+  }
+</style>

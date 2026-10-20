@@ -1,0 +1,1007 @@
+---
+// One project as an editorial composition: giant number, accent field with screenshot, title,
+// facts, overview, highlights, links and technologies. Everything comes from src/data/projects.ts.
+// One DOM; CSS recomposes it as the desktop grid or the mobile rail layout.
+import { projects } from '../../data/projects';
+import type { Project } from '../../data/types';
+import { accentOf, accentStyle, projectKicker } from '../../utils/accent';
+import { getImage } from '../../utils/images';
+import { SHOW_PLACEHOLDERS } from '../../utils/placeholders';
+import GoLink from '../ui/GoLink.astro';
+import Icon from '../ui/Icon.astro';
+import ProjectShot from './ProjectShot.astro';
+
+interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+const accent = accentOf(project.accent);
+
+// Three desktop compositions, cycling: field on the right, field on the left, vertical band.
+const variant = (['right', 'left', 'band'] as const)[index % 3];
+const total = String(projects.length).padStart(2, '0');
+const sizeClass = project.title.length <= 4 ? 'title-short' : project.title.length <= 12 ? 'title-mid' : 'title-long';
+const kicker = projectKicker(project);
+const caseStudyHref = `/projects/${project.slug}`;
+
+// Facts next to the overview: the project's own rows plus role and source.
+interface Fact {
+  label: string;
+  text?: string;
+  href?: string;
+  placeholder?: string;
+  desktopOnly?: boolean;
+}
+const roleFact: Fact | undefined = project.role
+  ? { label: 'My role', text: project.role }
+  : SHOW_PLACEHOLDERS
+    ? { label: 'My role', placeholder: '[TO BE FILLED — scope of my contribution]' }
+    : undefined;
+const { repository } = project;
+const sourceFact: Fact | undefined =
+  repository.visibility === 'private'
+    ? { label: 'Source', text: 'Private repository' }
+    : repository.url
+      ? { label: 'Source', text: 'Public repository', href: repository.url }
+      : SHOW_PLACEHOLDERS
+        ? { label: 'Source', placeholder: '[REPOSITORY LINK — ADD ONLY IF PUBLIC]' }
+        : undefined;
+const facts: Fact[] = [...project.facts.map((f) => ({ label: f.label, text: f.value, desktopOnly: f.desktopOnly })), roleFact, sourceFact].filter(
+  (f): f is Fact => Boolean(f),
+);
+
+// Links. Projects are not deployed: the case study (with its pinned screenshots) and the source repository.
+// A screenshots link only exists once screenshots do; a source link only for public repositories with a URL.
+const showScreenshots = (project.screenshots?.length ?? 0) > 0;
+const showSource = project.repository.visibility === 'public' && (Boolean(project.repository.url) || SHOW_PLACEHOLDERS);
+const repoLabel = (url: string) => new URL(url).pathname.replace(/^\//, ''); // "owner/repo
+
+const cover = getImage(project.cover?.src);
+const coverCaption = SHOW_PLACEHOLDERS
+  ? `[SCREENSHOT PLACEHOLDER — ${project.shortTitle}]`
+  : `${project.shortTitle} — interface schematic`;
+const coverLabel = SHOW_PLACEHOLDERS
+  ? `Placeholder for a ${project.shortTitle} screenshot — to be added`
+  : `Interface schematic of ${project.title}`;
+
+const overviewLabel = project.overview.label ?? 'Overview';
+---
+
+<article
+  id={`project-${project.number}`}
+  class:list={['project', `variant-${variant}`, sizeClass, { english: Boolean(project.englishTitle) }]}
+  aria-labelledby={`${project.slug}-title`}
+  style={accentStyle(project.accent)}
+>
+  <!-- ============ visual: giant number, accent field, screenshot ============ -->
+  <div class="visual">
+    <div class="field" aria-hidden="true"></div>
+
+    <div class="v-label">
+      <p class="lbl">Project {project.number} / {total}</p>
+      {kicker && <p class="v-sub lbl mute">{kicker}</p>}
+    </div>
+    {project.englishTitle && <p class="v-eyebrow lbl mute">{project.englishTitle}</p>}
+
+    <div class="shot-slot">
+      <ProjectShot
+        drawing={`home-${project.wireframe}`}
+        image={cover}
+        fit={project.cover?.fit}
+        alt={project.cover?.alt ?? project.title}
+        caption={coverCaption}
+        label={coverLabel}
+      />
+    </div>
+    {project.visualLabel && <p class="v-vertical lbl" aria-hidden="true">{project.visualLabel}</p>}
+
+    <div class="numwrap" aria-hidden="true">
+      <span class="sq"></span>
+      <span class="num">{project.number}</span>
+    </div>
+  </div>
+
+  <!-- ============ title ============ -->
+  <header class="head">
+    {project.category && <p class="kicker lbl mute">{project.category}</p>}
+    <div class="titles">
+      <h2 id={`${project.slug}-title`} class="title disp">{project.title}</h2>
+      <p class="subtitle">{project.subtitle}</p>
+    </div>
+    <div class="go-cell">
+      <GoLink
+        href={caseStudyHref}
+        label={`View ${project.shortTitle} case study`}
+        fill={accent.color}
+        ink={accent.on}
+      />
+    </div>
+  </header>
+
+  <!-- ============ facts, overview, highlights, links, technologies ============ -->
+  <div class="body">
+    <div class="rail rail-overview" aria-hidden="true"><span class="rail-text lbl">{overviewLabel}</span></div>
+    <div class="overview">
+      {
+        project.overview.tag && (
+          <p class="tag-row">
+            <span class="tag">
+              <span class="tag-prefix">{overviewLabel} · </span>
+              {project.overview.tag}
+            </span>
+          </p>
+        )
+      }
+      <h3 class="sr">{overviewLabel}</h3>
+      <p class="lead">{project.overview.lead}</p>
+      {
+        project.overview.extra?.text && (
+          <>
+            <p class="extra-label lbl mute">{project.overview.extra.heading}</p>
+            <p class="extra-text">{project.overview.extra.text}</p>
+          </>
+        )
+      }
+      {
+        project.overview.extra?.list && (
+          <>
+            <h3 class="extra-heading lbl">{project.overview.extra.heading}</h3>
+            <ul class="tl">
+              {project.overview.extra.list.map((item) => <li>{item}</li>)}
+            </ul>
+          </>
+        )
+      }
+    </div>
+
+    <dl class="facts">
+      {
+        facts.map((fact) => (
+          <div class:list={['fact', { 'desktop-only': fact.desktopOnly }]}>
+            <dt class="lbl mute">{fact.label}</dt>
+            <dd>
+              {fact.placeholder && <span class="ph">{fact.placeholder}</span>}
+              {fact.text && (fact.href ? <a href={fact.href} rel="noopener">{fact.text}</a> : fact.text)}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="rail rail-highlights" aria-hidden="true"><span class="rail-text lbl">{project.inDevelopment ? 'Coming next' : 'Highlights'}</span></div>
+    <div class="highlights">
+      <h3 class="hl-title lbl">{project.inDevelopment ? 'What is coming' : 'Engineering highlights'}</h3>
+      <ol role="list">
+        {
+          project.highlights.map((item) => (
+            <li class="hl">
+              <span class="hm" />
+              <div>
+                <p class="ht">
+                  {item.title}
+                  {item.tag && (
+                    <span class="tag-line">
+                      <span class="tag">{item.tag}</span>
+                    </span>
+                  )}
+                </p>
+                <p class="hd">{item.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="rail rail-links" aria-hidden="true"><span class="rail-text lbl">Links</span></div>
+    <div class="links">
+      <a class="lk lk-a" href={caseStudyHref} aria-label={`View ${project.shortTitle} case study`}>
+        <span class="lk-text"><span class="lk-title">Case study</span></span>
+        <Icon class="lk-icon" name="right" size={22} />
+      </a>
+      {
+        showScreenshots && (
+          <a class="lk" href={`${caseStudyHref}#screenshots`} aria-label={`View ${project.shortTitle} screenshots`}>
+            <span class="lk-text">
+              <span class="lk-title">Screenshots</span>
+              <small>{project.screenshots?.length === 1 ? '1 pinned image' : `${project.screenshots?.length} pinned images`}</small>
+            </span>
+            <Icon class="lk-icon" name="right" size={22} />
+          </a>
+        )
+      }
+      {
+        showSource && (
+          <a
+            class="lk"
+            href={project.repository.url ?? `#project-${project.number}`}
+            aria-label={`View ${project.shortTitle} source code`}
+            rel={project.repository.url ? 'noopener' : undefined}
+            target={project.repository.url ? '_blank' : undefined}
+          >
+            <span class="lk-text">
+              <span class="lk-title">Source</span>
+              <small>
+                {project.repository.url ? (
+                  repoLabel(project.repository.url).split(/(?<=[/_])/).map((part) => <>{part}<wbr /></>)
+                ) : (
+                  <span class="ph">[ONLY IF PUBLIC]</span>
+                )}
+              </small>
+            </span>
+            <Icon class="lk-icon" name="right" size={22} />
+          </a>
+        )
+      }
+    </div>
+
+    <div class="rule" aria-hidden="true"></div>
+    <div class="tech-head"><h3 class="tech-label lbl">Technologies</h3></div>
+    <div class="tech">
+      {
+        project.stack.map((group) => (
+          <div class="tg">
+            <p class="tg-label lbl">{group.label}</p>
+            <ul class="tl tl-inline">
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  /* =====================================================================
+     Mobile + tablet (design: 390px). Rail | content. --m scales geometry.
+     ===================================================================== */
+  .project {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------- visual ---------- */
+  .visual {
+    position: relative;
+    /* above the next row, so its hairline does not run through the screenshot caption */
+    z-index: 2;
+    height: calc(480 * var(--m));
+    border-top: 1px solid var(--color-grid);
+  }
+  .field {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(230 * var(--m) - 1px);
+    height: calc(250 * var(--m));
+    background: var(--acc);
+  }
+  .variant-band .field {
+    right: auto;
+    width: var(--rail);
+  }
+  .v-label {
+    position: absolute;
+    left: calc(var(--rail) + 20px);
+    top: 20px;
+    right: 20px;
+  }
+  .v-sub {
+    margin-top: 4px;
+  }
+  /* The number's ink sits above its line box. Lift the kicker only while that ink would cover it. */
+  @media (max-width: 1199px) {
+    .v-label {
+      top: max(0px, min(20px, calc(38.6 * var(--m) - 36px)));
+    }
+    .v-label .lbl {
+      line-height: 1.2;
+    }
+    .v-sub {
+      margin-top: 2px;
+    }
+    .v-label .tag {
+      padding-block: 1px;
+      line-height: 1.2;
+    }
+  }
+  .v-eyebrow,
+  .v-vertical {
+    display: none;
+  }
+  .shot-slot {
+    position: absolute;
+    z-index: 2;
+    left: calc(var(--rail) - 20px);
+    width: calc(100% - var(--rail));
+    top: calc(256 * var(--m) - 1px);
+    height: calc(244 * var(--m));
+  }
+  .numwrap {
+    position: absolute;
+    z-index: 3;
+    left: 10px;
+    top: calc(53.6 * var(--m) - 1px);
+  }
+  .variant-left .numwrap {
+    left: auto;
+    right: 12px;
+  }
+  .num {
+    position: relative;
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: calc(240 * var(--m));
+    line-height: 0.76;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+  }
+  .sq {
+    position: absolute;
+    left: calc(4 * var(--m));
+    bottom: calc(12 * var(--m));
+    width: calc(78 * var(--m));
+    height: calc(78 * var(--m));
+    background: var(--acc);
+  }
+  .variant-left .sq {
+    left: auto;
+    right: 0;
+  }
+  .variant-band .sq {
+    display: none;
+  }
+
+  /* ---------- title ---------- */
+  .head {
+    position: relative;
+    z-index: 1;
+    padding: 50px 20px 30px;
+  }
+  .kicker,
+  .go-cell {
+    display: none;
+  }
+  .title-mid .title {
+    /* one line at the design size; shrinks (and, as a last resort, breaks) on the narrowest screens */
+    font-size: min(calc(42 * var(--m)), calc((100cqw - 40px) / 7.9));
+  }
+  .title-long .title {
+    font-size: calc(34 * var(--m));
+    line-height: 0.98;
+  }
+  .title-short .title {
+    font-size: calc(120 * var(--m));
+  }
+  .subtitle {
+    margin-top: 16px;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+  .english .subtitle {
+    font-weight: 600;
+  }
+
+  /* ---------- body: rail | content, rows stacked ---------- */
+  .body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+  }
+  .tech-head .tech-label {
+    /* the technologies heading is a rail label on small screens */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .rule {
+    display: none;
+  }
+
+  .rail,
+  .tech-head {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-grid);
+  }
+  .rail-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .overview,
+  .highlights,
+  .tech,
+  .links {
+    grid-column: 2;
+    border-top: 1px solid var(--color-grid);
+  }
+  .facts {
+    grid-column: 2;
+  }
+
+  /* default order: overview, facts, highlights, technologies, links */
+  .rail-overview {
+    grid-row: 1 / 3;
+  }
+  .overview {
+    grid-row: 1;
+    padding: 28px 20px 0;
+  }
+  .facts {
+    grid-row: 2;
+    padding: 22px 20px 30px;
+  }
+  .rail-highlights {
+    grid-row: 3;
+  }
+  .highlights {
+    grid-row: 3;
+    padding: 26px 20px 30px;
+  }
+  .tech-head {
+    grid-row: 4;
+  }
+  .tech {
+    grid-row: 4;
+    padding: 26px 20px 30px;
+  }
+  .rail-links {
+    grid-row: 5;
+  }
+  .links {
+    grid-row: 5;
+    padding: 26px 20px 34px;
+  }
+
+  .tag-row {
+    margin-bottom: 12px;
+  }
+  .tag-prefix {
+    display: none;
+  }
+  .lead {
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .extra-label {
+    margin-top: 28px;
+  }
+  /* the phone design leaves this line out: the lead paragraph already says the same */
+  @media (max-width: 767px) {
+    .extra-label,
+    .extra-text {
+      display: none;
+    }
+  }
+  .extra-text {
+    margin-top: 5px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .extra-heading {
+    margin: 26px 0 10px;
+  }
+  .tl li {
+    padding: 6px 0;
+    border-top: 1px solid var(--color-grid);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .tl:not(.tl-inline) li:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+
+  .fact {
+    padding: 13px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .fact:last-child {
+    border-bottom: 1px solid var(--color-grid);
+  }
+  .fact dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  @media (max-width: 767px) {
+    .desktop-only {
+      display: none;
+    }
+  }
+  .fact a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .hl-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .hl {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    padding: 15px 0;
+    border-top: 1px solid var(--color-grid);
+  }
+  .highlights .hl:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .hm {
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    background: var(--acc);
+  }
+  .ht {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  /* on phones the tag sits on its own line below the title */
+  .tag-line {
+    display: block;
+    margin: 4px 0 2px;
+    font-size: 16px;
+    line-height: 24.8px;
+  }
+  .hd {
+    margin-top: 3px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--color-body);
+  }
+  .also {
+    padding-top: 14px;
+    border-top: 1px solid var(--color-grid);
+  }
+
+  .tg + .tg {
+    margin-top: 18px;
+  }
+  .tg-label {
+    color: var(--color-ink);
+  }
+  .tl-inline {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .tl-inline li {
+    display: inline;
+    padding: 0;
+    border: 0;
+  }
+  .tl-inline li + li::before {
+    content: ' · ';
+  }
+
+  /* ---------- links ---------- */
+  .lk {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 58px;
+    margin-bottom: 12px;
+    padding: 10px 16px;
+    border: 2px solid var(--color-ink);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .lk-a {
+    background: var(--acc);
+    border-color: var(--acc);
+    color: var(--on);
+  }
+  .lk small {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.45;
+    text-transform: none;
+    overflow-wrap: anywhere;
+  }
+  .lk :global(.lk-icon) {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+  .lk:active {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+
+  @media (min-width: 768px) {
+    /* keep reading lines short without cutting the hairlines */
+    .lead,
+    .hd,
+    .extra-text {
+      max-width: 62ch;
+    }
+    .links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      column-gap: 12px;
+    }
+  }
+
+  /* =====================================================================
+     Desktop: the architectural grid (design: 1360px site)
+     ===================================================================== */
+  @media (min-width: 1200px) {
+    .visual {
+      height: calc(460 * var(--u));
+    }
+    .field {
+      top: 0;
+      bottom: 0;
+      height: auto;
+    }
+    .variant-right .field {
+      left: 35.057%;
+      right: 0;
+    }
+    .variant-left .field {
+      left: 0;
+      right: auto;
+      width: 35.057%;
+    }
+    .variant-band .field {
+      left: 23.563%;
+      right: auto;
+      width: 11.494%;
+    }
+
+    .v-label {
+      left: calc(44 * var(--u));
+      top: calc(44 * var(--u));
+      right: auto;
+    }
+    .v-sub {
+      margin-top: 4px;
+    }
+    .variant-left .v-label {
+      top: calc(18 * var(--u));
+      color: var(--color-ink);
+    }
+    .variant-left .v-sub {
+      display: none;
+    }
+    .v-eyebrow {
+      display: block;
+      position: absolute;
+      left: calc(35.057% + 268 * var(--u));
+      top: calc(44 * var(--u));
+      max-width: calc(250 * var(--u));
+      text-wrap: balance;
+    }
+
+    .shot-slot {
+      top: calc(48 * var(--u));
+      height: calc(430 * var(--u));
+      width: calc(620 * var(--u));
+    }
+    .variant-right .shot-slot {
+      left: calc(35.057% + 56 * var(--u));
+    }
+    .variant-left .shot-slot {
+      left: calc(44 * var(--u));
+      width: calc(640 * var(--u));
+    }
+    .variant-band .shot-slot {
+      left: calc(35.057% - 72 * var(--u));
+      width: calc(660 * var(--u));
+    }
+
+    .v-vertical {
+      display: block;
+      position: absolute;
+      top: calc(48 * var(--u));
+      margin: 0;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.3em;
+    }
+    .variant-right .v-vertical {
+      right: calc(30 * var(--u));
+      color: var(--on);
+    }
+    .variant-band .v-vertical {
+      left: calc(88.736% + 30 * var(--u));
+    }
+
+    .numwrap {
+      left: calc(20 * var(--u));
+      top: auto;
+      bottom: calc(-8 * var(--u));
+    }
+    .variant-left .numwrap {
+      left: auto;
+      right: calc(24 * var(--u));
+    }
+    .num {
+      font-size: calc(320 * var(--u));
+    }
+    .sq {
+      left: calc(6 * var(--u));
+      bottom: calc(16 * var(--u));
+      width: calc(104 * var(--u));
+      height: calc(104 * var(--u));
+      transition: transform 0.3s var(--ease);
+    }
+    .variant-left .sq {
+      left: auto;
+      right: calc(-4 * var(--u));
+    }
+    .project:hover .sq {
+      transform: translate(10px, -10px);
+    }
+
+    /* title row */
+    .head {
+      display: grid;
+      grid-template-columns: var(--cols);
+      padding: 0;
+      border-top: 1px solid var(--color-grid);
+    }
+    .kicker {
+      display: block;
+      grid-column: 1;
+      padding: calc(40 * var(--u)) calc(44 * var(--u));
+    }
+    .title-short .kicker {
+      padding-top: calc(44 * var(--u));
+    }
+    .titles {
+      grid-column: 3 / 5;
+      padding: calc(44 * var(--u)) calc(44 * var(--u)) calc(40 * var(--u));
+    }
+    .title-mid .title {
+      font-size: calc(84 * var(--u));
+      white-space: normal;
+    }
+    .title-long .title {
+      font-size: calc(56 * var(--u));
+      line-height: 0.96;
+    }
+    .title-short .title {
+      font-size: calc(140 * var(--u));
+    }
+    .subtitle {
+      max-width: calc(560 * var(--u));
+      margin-top: 18px;
+      font-size: max(16px, calc(19 * var(--u)));
+    }
+    .english .subtitle {
+      max-width: none;
+      font-size: max(16px, calc(20 * var(--u)));
+      line-height: 1.4;
+    }
+    .go-cell {
+      display: block;
+      grid-column: 5;
+      --go-height: calc(153 * var(--u));
+      --go-border: 1px solid var(--color-grid);
+    }
+
+    /* body: A facts | C1 overview | C2 highlights | D links, then technologies */
+    .body {
+      grid-template-columns: var(--cols);
+      grid-template-rows: auto auto;
+      border-top: 1px solid var(--color-grid);
+    }
+    .rail {
+      display: none;
+    }
+    .rule {
+      display: block;
+      grid-column: 1 / -1;
+      grid-row: 2;
+      align-self: start;
+      height: 1px;
+      background: var(--color-grid);
+    }
+    .overview,
+    .highlights,
+    .tech,
+    .links {
+      border-top: 0;
+    }
+    .lead,
+    .hd,
+    .extra-text {
+      max-width: none;
+    }
+    .facts {
+      grid-column: 1;
+      grid-row: 1;
+      padding: calc(44 * var(--u));
+    }
+    .overview {
+      grid-column: 3;
+      grid-row: 1;
+      padding: calc(44 * var(--u)) calc(20 * var(--u)) calc(44 * var(--u)) calc(44 * var(--u));
+    }
+    .highlights {
+      grid-column: 4;
+      grid-row: 1;
+      padding: calc(44 * var(--u)) calc(44 * var(--u)) calc(44 * var(--u)) calc(20 * var(--u));
+    }
+    .links {
+      display: block;
+      grid-column: 5;
+      grid-row: 1;
+      padding: 0;
+    }
+
+    .tag-row {
+      margin-bottom: 14px;
+    }
+    .tag-prefix {
+      display: inline;
+    }
+    .lead {
+      font-size: max(16px, calc(20 * var(--u)));
+      line-height: 1.45;
+    }
+    .extra-heading {
+      margin: 28px 0 10px;
+    }
+    .fact {
+      padding: 14px 0;
+    }
+    .fact:last-child {
+      border-bottom: 0;
+    }
+    .fact dd {
+      margin-top: 5px;
+    }
+    .tl:not(.tl-inline) li:last-child {
+      border-bottom: 1px solid var(--color-grid);
+    }
+
+    .hl-title {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+      margin-bottom: 14px;
+    }
+    .hl,
+    .highlights .hl:first-child {
+      padding: 16px 0;
+      border-top: 1px solid var(--color-grid);
+    }
+    .hl {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+    .tag-line {
+      display: inline;
+      margin: 0 0 0 6px;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    /* technologies row */
+    /* +1px: the row's own hairline takes up space in the design */
+    .tech-head {
+      grid-column: 1;
+      grid-row: 2;
+      display: block;
+      padding: calc(36 * var(--u) + 1px) calc(44 * var(--u)) calc(36 * var(--u));
+      border-top: 0;
+    }
+    .tech-head .tech-label {
+      writing-mode: horizontal-tb;
+      transform: none;
+      color: inherit;
+    }
+    .tech {
+      grid-column: 3 / 5;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: calc(24 * var(--u));
+      padding: calc(36 * var(--u) + 1px) calc(44 * var(--u)) calc(36 * var(--u));
+    }
+    .tg + .tg {
+      margin-top: 0;
+    }
+    .tg-label {
+      margin-bottom: 10px;
+      color: var(--color-mute);
+    }
+    .tl-inline {
+      margin-top: 0;
+    }
+    .tl-inline li {
+      display: block;
+      padding: 6px 0;
+      border-top: 1px solid var(--color-grid);
+    }
+    .tl-inline li:last-child {
+      border-bottom: 1px solid var(--color-grid);
+    }
+    .tl-inline li + li::before {
+      content: none;
+    }
+
+    /* links column */
+    .lk {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: calc(128 * var(--u));
+      margin: 0;
+      padding: 18px 16px;
+      border: 0;
+      border-bottom: 1px solid var(--color-grid);
+      font-size: 12px;
+      transition: color 0.2s var(--ease);
+    }
+    .lk::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: var(--color-ink);
+      transform: translateY(101%);
+      transition: transform 0.22s var(--ease);
+    }
+    .lk:hover::before,
+    .lk:focus-visible::before {
+      transform: translateY(0);
+    }
+    .lk:hover,
+    .lk:focus-visible {
+      color: #fff;
+    }
+    .lk-text {
+      display: contents;
+    }
+    .lk small {
+      margin-top: 0;
+    }
+    .lk:not(.lk-a) :global(.lk-icon) {
+      display: none;
+    }
+    .lk :global(.lk-icon) {
+      width: 22px;
+      height: 22px;
+    }
+    .lk:active {
+      border-color: transparent;
+    }
+  }
+</style>

@@ -1,0 +1,255 @@
+---
+// "Selected work": section heading plus a scannable index of all projects.
+// Hovering a row slides the project's accent colour across it and inverts the text.
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+import { accentOf, projectKicker } from '../../utils/accent';
+import Icon from '../ui/Icon.astro';
+
+const count = String(projects.length).padStart(2, '0');
+---
+
+<div class="head">
+  <div class="rail" aria-hidden="true"><span class="rail-text lbl">{count} projects</span></div>
+  <h2 class="title disp" id="selected-work">Selected<br />work</h2>
+  <p class="intro">{profile.copy.projectsIntro}</p>
+  <p class="count lbl mute" aria-hidden="true">{count} / {count}</p>
+</div>
+
+<ul class="index" aria-label="Projects">
+  {
+    projects.map((project) => {
+      const accent = accentOf(project.accent);
+      return (
+        <li>
+          <a class="ix" href={`#project-${project.number}`} style={`--fill:${accent.color};--ink:${accent.on}`}>
+            <span class="num disp">{project.number}</span>
+            <span class="status lbl sub">{projectKicker(project)}</span>
+            <span class="square" />
+            <div class="body">
+              <h3 class:list={['disp', { long: project.title.length > 12 }]}>{project.title}</h3>
+              <p class="sub">{project.summary}</p>
+            </div>
+            <Icon class="arrow" name="right" size={28} />
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  /* ---------- section heading: mobile ---------- */
+  .head {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    border-top: 1px solid var(--color-grid);
+  }
+  .rail {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: flex;
+    justify-content: center;
+    padding-top: 28px;
+  }
+  .rail-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    color: var(--color-mute);
+  }
+  .title {
+    grid-column: 2;
+    padding: 36px 20px 0;
+    font-size: 40px;
+  }
+  .intro {
+    grid-column: 2;
+    padding: 14px 20px 30px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .count {
+    display: none;
+  }
+
+  /* ---------- index rows: mobile ---------- */
+  .ix {
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    min-height: 132px;
+    border-top: 1px solid var(--color-grid);
+    color: var(--color-ink);
+    transition: color 0.2s var(--ease);
+  }
+  .ix::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease);
+  }
+  .ix:hover::before,
+  .ix:focus-visible::before,
+  .ix:active::before {
+    transform: scaleX(1);
+  }
+  .ix:hover,
+  .ix:focus-visible,
+  .ix:active {
+    color: var(--ink);
+  }
+  .sub {
+    opacity: 0.88;
+  }
+  .num {
+    grid-column: 1;
+    grid-row: 1;
+    padding-top: 24px;
+    text-align: center;
+    font-size: 22px;
+  }
+  .square {
+    position: absolute;
+    left: calc((var(--rail) - 16px) / 2);
+    top: 56px;
+    width: 16px;
+    height: 16px;
+    background: var(--fill);
+    transition: background 0.2s var(--ease);
+  }
+  .ix:hover .square,
+  .ix:active .square {
+    background: var(--ink);
+  }
+  .body {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 24px 20px 0;
+  }
+  .body h3 {
+    font-size: 30px;
+  }
+  .body h3.long {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .body p {
+    margin-top: 8px;
+    font-size: 14.5px;
+    line-height: 1.45;
+  }
+  .status {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 10px 20px 24px;
+  }
+  .ix :global(.arrow) {
+    display: none;
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width: 1200px) {
+    .head {
+      grid-template-columns: var(--cols);
+      min-height: calc(190 * var(--u));
+    }
+    .rail {
+      display: none;
+    }
+    .title {
+      grid-column: 1;
+      grid-row: 1;
+      padding: calc(44 * var(--u));
+      font-size: calc(44 * var(--u));
+    }
+    .intro {
+      grid-column: 3 / 5;
+      grid-row: 1;
+      align-self: end;
+      max-width: calc(628 * var(--u));
+      padding: calc(44 * var(--u));
+      font-size: max(15px, calc(18 * var(--u)));
+    }
+    .count {
+      display: block;
+      grid-column: 5;
+      grid-row: 1;
+      align-self: end;
+      justify-self: center;
+      padding: calc(44 * var(--u)) 0;
+    }
+
+    .ix {
+      grid-template-columns: var(--cols);
+      grid-template-rows: 1fr auto;
+      row-gap: 16px;
+      min-height: calc(150 * var(--u));
+    }
+    .num {
+      grid-column: 1;
+      grid-row: 1;
+      padding: calc(34 * var(--u)) calc(44 * var(--u)) 0;
+      text-align: left;
+      font-size: calc(56 * var(--u));
+    }
+    .status {
+      grid-column: 1;
+      grid-row: 2;
+      padding: 0 calc(44 * var(--u)) calc(34 * var(--u));
+    }
+    .square {
+      position: static;
+      grid-column: 2;
+      grid-row: 1 / 3;
+      place-self: center;
+      width: calc(28 * var(--u));
+      height: calc(28 * var(--u));
+      transition:
+        background 0.2s var(--ease),
+        transform 0.25s var(--ease);
+    }
+    .ix:hover .square {
+      transform: translateX(6px);
+    }
+    .body {
+      grid-column: 3 / 5;
+      grid-row: 1 / 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: calc(34 * var(--u)) calc(44 * var(--u));
+    }
+    .body h3 {
+      font-size: calc(34 * var(--u));
+    }
+    .body h3.long {
+      font-size: calc(30 * var(--u));
+    }
+    .body p {
+      margin: 0;
+      font-size: max(13px, calc(15 * var(--u)));
+    }
+    .ix :global(.arrow) {
+      display: block;
+      grid-column: 5;
+      grid-row: 1 / 3;
+      place-self: center;
+      transition: transform 0.22s var(--ease);
+    }
+    .ix:hover :global(.arrow) {
+      transform: translateX(8px);
+    }
+  }
+</style>
