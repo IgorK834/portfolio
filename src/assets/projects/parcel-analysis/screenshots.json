@@ -1,0 +1,39 @@
+{
+  "cover": {
+    "file": "01-analysis-result.png",
+    "alt": "A parcel outline and general-plan zones appear beside the Polish analysis completeness panel.",
+    "caption": "POG is imported; ISOK and municipal MPZP discovery were unavailable. Analysis status: partial."
+  },
+  "screenshots": [
+    {
+      "file": "01-analysis-result.png",
+      "alt": "A parcel outline and general-plan zones appear beside the Polish analysis completeness panel.",
+      "caption": "POG is imported; ISOK and municipal MPZP discovery were unavailable. Analysis status: partial."
+    },
+    {
+      "file": "02-map-layers.png",
+      "alt": "A selected general-plan zone appears on the vector map with planning parameters in the inspector.",
+      "caption": "The inspector displays the selected POG zone and its planning parameters."
+    },
+    {
+      "file": "03-section-statuses.png",
+      "alt": "Expanded completeness details show checked sections, partial results and missing coverage with explicit labels.",
+      "caption": "Section statuses distinguish missing coverage from a verified absence of restrictions."
+    },
+    {
+      "file": "04-empty-state.png",
+      "alt": "The map panel explains that the general-plan layer is unavailable because no plans have been imported.",
+      "caption": "Before import, the POG panel explicitly reports that no general plans have been imported."
+    },
+    {
+      "file": "05-pdf-report.png",
+      "alt": "The first two complete pages of the downloaded PDF report show parcel details and the analysis summary.",
+      "caption": "The downloaded PDF report v2 preserves the parcel details and completeness summary."
+    },
+    {
+      "file": "06-audit-package.png",
+      "alt": "The audit download text and its SHA-256 appear beside the unmodified output of the Python verifier.",
+      "caption": "The real verifier confirms 10 files and matches the package SHA-256 shown by the application."
+    }
+  ]
+}
