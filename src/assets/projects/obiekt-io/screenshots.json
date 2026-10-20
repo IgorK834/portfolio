@@ -1,0 +1,16 @@
+{
+  "cover": {
+    "file": "01-web-skeleton.png",
+    "alt": "The obiekt.io wordmark and the tagline “Narzędzie dla zarządców budynków: od zgłoszenia do odbioru” beside a black door-shaped mark and four coloured tiles.",
+    "caption": "obiekt.io brand banner. The product interface is still to come.",
+    "fit": "contain"
+  },
+  "screenshots": [
+    {
+      "file": "01-web-skeleton.png",
+      "alt": "The obiekt.io wordmark and the tagline “Narzędzie dla zarządców budynków: od zgłoszenia do odbioru” beside a black door-shaped mark and four coloured tiles.",
+      "caption": "obiekt.io brand banner. The product interface is still to come.",
+      "fit": "contain"
+    }
+  ]
+}
