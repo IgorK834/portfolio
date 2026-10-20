@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResumePage from '../components/resume/ResumePage.astro';
+import { profile } from '../data/profile';
+import { resumeJsonLd } from '../utils/seo';
+---
+
+<BaseLayout
+  title={`Resume — ${profile.name}, ${profile.title}`}
+  description="Resume of Igor Kadziela, Software Engineer / Full-Stack Engineer: skills in Java / Spring Boot, TypeScript / React / Next.js, Python / FastAPI and PostgreSQL / PostGIS, plus selected projects."
+  path="/resume"
+  jsonLd={resumeJsonLd()}
+>
+  <ResumePage />
+</BaseLayout>

@@ -1,0 +1,10 @@
+---
+import Cv from '../components/cv/Cv.astro';
+import CvLayout from '../layouts/CvLayout.astro';
+import { defaultCvVariant } from '../data/cv';
+import { profile } from '../data/profile';
+---
+
+<CvLayout title={`CV — ${profile.name}`} description={`Printable CV of ${profile.name}, ${profile.title}.`} path="/cv">
+  <Cv variant={defaultCvVariant} />
+</CvLayout>

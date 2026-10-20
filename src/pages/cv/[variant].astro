@@ -1,0 +1,20 @@
+---
+import Cv from '../../components/cv/Cv.astro';
+import CvLayout from '../../layouts/CvLayout.astro';
+import { cvVariants, defaultCvVariant, getCvVariant } from '../../data/cv';
+import { profile } from '../../data/profile';
+
+export function getStaticPaths() {
+  return cvVariants.filter((v) => v !== defaultCvVariant).map((v) => ({ params: { variant: v.slug } }));
+}
+
+const variant = getCvVariant(Astro.params.variant!)!;
+---
+
+<CvLayout
+  title={`CV (${variant.label}) — ${profile.name}`}
+  description={`Printable CV of ${profile.name}: ${variant.headline}.`}
+  path={`/cv/${variant.slug}`}
+>
+  <Cv variant={variant} />
+</CvLayout>
