@@ -1,0 +1,23 @@
+/* Design tokens: the approved palette and the few primitives that repeat across components. */
+:root {
+  --color-blue: #2369f5;
+  --color-red: #fe3d3c;
+  --color-yellow: #ffb523;
+  --color-ink: #17191d;
+  --color-paper: #ffffff;
+  --color-grid: #d7dee7;
+  /* text greys: 6.7:1 and ~11:1 on white */
+  --color-mute: #555c69;
+  --color-body: #343a46;
+
+  /* wireframe / placeholder greys used for screenshot stand-ins and the portrait slot */
+  --wire-bg: #edf0f4;
+  --wire-line: #cbd2dc;
+  --wire-block: #cdd3dc;
+  --wire-accent: #8f98a8;
+  --wire-note: #4b5261;
+
+  --ease: ease;
+  /* the page is full-bleed; this only stops the composition growing past ~3400px wide screens */
+  --page-max: 3400px;
+}
