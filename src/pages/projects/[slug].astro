@@ -1,0 +1,19 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import CaseHero from '../../components/case-study/CaseHero.astro';
+import CaseSections from '../../components/case-study/CaseSections.astro';
+import NextProject from '../../components/case-study/NextProject.astro';
+import { projects } from '../../data/projects';
+
+export function getStaticPaths() {
+  return projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }));
+}
+
+const { project, index } = Astro.props;
+---
+
+<ProjectLayout project={project}>
+  <CaseHero project={project} firstSectionId="s01" />
+  <CaseSections project={project} />
+  <NextProject index={index} />
+</ProjectLayout>
