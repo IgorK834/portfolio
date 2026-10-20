@@ -1,0 +1,59 @@
+{
+  "cover": {
+    "file": "00-overview.png",
+    "alt": "The ResearchHub workspace overview: sidebar navigation, a question box that asks across five sources, recent documents and recent AI activity.",
+    "caption": "Workspace overview in a local run with synthetic data: ask across five sources, recent documents and AI activity."
+  },
+  "screenshots": [
+    {
+      "file": "00-overview.png",
+      "alt": "The ResearchHub workspace overview: sidebar navigation, a question box that asks across five sources, recent documents and recent AI activity.",
+      "caption": "Workspace overview in a local run with synthetic data: ask across five sources, recent documents and AI activity."
+    },
+    {
+      "file": "01-workspace.png",
+      "alt": "The synthetic RC lab report is open beside the workspace source list and document outline.",
+      "caption": "Local synthetic lab: the shared report and workspace sources in one view."
+    },
+    {
+      "file": "02-source-versions.png",
+      "alt": "Three immutable uploads of a synthetic CSV appear in version history, each with a download action.",
+      "caption": "Three real uploads; every version remains downloadable."
+    },
+    {
+      "file": "03-dataset-preview.png",
+      "alt": "A synthetic CSV preview shows sample rows, a sheet tab, inferred types, one missing cell and Analyze this data.",
+      "caption": "Synthetic CSV: bounded preview, inferred types and a missing temperature value."
+    },
+    {
+      "file": "03b-dataset-columns.png",
+      "alt": "The CSV column profile lists inferred types and exact missing-value counts for all four columns.",
+      "caption": "The synthetic CSV profile records one missing temperature value out of four rows."
+    },
+    {
+      "file": "04-cited-answer.png",
+      "alt": "Beside the report, a research conversation answers the time-constant question with links to source fragments.",
+      "caption": "A source-linked answer beside the report. Deterministic fixture AI."
+    },
+    {
+      "file": "04b-no-evidence.png",
+      "alt": "Beside the report, the research panel says the sources contain no evidence about room humidity.",
+      "caption": "Unrecorded humidity returns insufficient evidence. Deterministic fixture AI."
+    },
+    {
+      "file": "05-analysis-result.png",
+      "alt": "A saved RC discharge chart appears beside its accepted plan, code hash and recorded sandbox runtime.",
+      "caption": "Real sandbox output and recorded runtime; deterministic fixture AI supplied the plan."
+    },
+    {
+      "file": "05b-analysis-provenance.png",
+      "alt": "The saved analysis shows its exact workbook version, run history, source hash and accepted plan.",
+      "caption": "Saved input version, run history and plan. Deterministic fixture AI plan."
+    },
+    {
+      "file": "06-collaboration.png",
+      "alt": "The report shows an anchored review thread, a reply and a second signed-in editor’s cursor.",
+      "caption": "An anchored review thread and cursor from two real local editor sessions."
+    }
+  ]
+}
