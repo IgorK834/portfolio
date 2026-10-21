@@ -7,6 +7,7 @@ import Icon from '../ui/Icon.astro';
 
 const channels = [
   { label: 'Email', value: profile.email, href: profile.email ? `mailto:${profile.email}` : '#contact', text: profile.email, placeholder: '[EMAIL ADDRESS — TO BE FILLED]' },
+  { label: 'Phone', value: profile.phone, href: profile.phone ? `tel:${profile.phone.replace(/\s/g, '')}` : '#contact', text: profile.phone, placeholder: '[PHONE NUMBER — TO BE FILLED]' },
   { label: 'LinkedIn', value: profile.linkedin, href: profile.linkedin ?? '#contact', text: profile.linkedin?.replace(/^https?:\/\/(www\.)?/, ''), placeholder: '[PROFILE URL — TO BE FILLED]' },
   { label: 'GitHub', value: profile.github, href: profile.github ?? '#contact', text: profile.github?.replace(/^https?:\/\/(www\.)?/, ''), placeholder: '[PROFILE URL — TO BE FILLED]' },
 ];

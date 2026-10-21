@@ -177,6 +177,7 @@ export interface Profile {
   location?: string;
   availability?: string;
   email?: string;
+  phone?: string;
   github?: string;
   linkedin?: string;
   education?: string;

@@ -5,9 +5,9 @@ import type { Profile } from './types';
  * Leave a field undefined until it is known: empty fields are hidden on the site.
  */
 export const profile: Profile = {
-  name: 'Igor Kadziela',
+  name: 'Igor Kądziela',
   firstName: 'Igor',
-  lastName: 'Kadziela',
+  lastName: 'Kądziela',
   title: 'Software Engineer / Full-Stack Engineer',
   titleLines: ['Software Engineer /', 'Full-Stack Engineer'],
   shortBio:
@@ -25,6 +25,7 @@ export const profile: Profile = {
   availability: 'Internship or Junior Full-Stack Engineer · full-time', // shown as "Open to"
   workMode: 'Remote, hybrid or on-site · open to relocating abroad',
   email: 'i.kadziela03@gmail.com',
+  phone: '+48 508 643 307',
   github: 'https://github.com/IgorK834',
   linkedin: undefined, // TODO: full profile URL once the LinkedIn profile is ready; the Contact row says "Coming soon".
   studies: {
@@ -63,7 +64,7 @@ export const profile: Profile = {
     },
   ],
   targetRole: 'Junior Full-Stack Engineer, or an internship',
-  languages: undefined,
+  languages: 'Polish (native) · English (B2)',
   // Portrait: put the photo in src/assets/ and set { src: 'portrait.jpg', alt: '...' }.
   portrait: undefined,
 
