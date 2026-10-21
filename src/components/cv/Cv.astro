@@ -16,6 +16,7 @@ const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
 
 const contact = [
   profile.email && { label: 'E-mail', text: profile.email, href: `mailto:${profile.email}` },
+  profile.phone && { label: 'Phone', text: profile.phone, href: `tel:${profile.phone.replace(/\s/g, '')}` },
   profile.github && { label: 'GitHub', text: bare(profile.github), href: profile.github },
   profile.linkedin && { label: 'LinkedIn', text: bare(profile.linkedin), href: profile.linkedin },
   profile.location && { label: 'Location', text: profile.location },

@@ -11,6 +11,7 @@ import NumberedSection from '../ui/NumberedSection.astro';
 const trim = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '');
 const contact = [
   { label: 'Email', value: profile.email, href: profile.email ? `mailto:${profile.email}` : undefined, text: profile.email },
+  { label: 'Phone', value: profile.phone, href: profile.phone ? `tel:${profile.phone.replace(/\s/g, '')}` : undefined, text: profile.phone },
   { label: 'LinkedIn', value: profile.linkedin, href: profile.linkedin, text: profile.linkedin && trim(profile.linkedin) },
   { label: 'GitHub', value: profile.github, href: profile.github, text: profile.github && trim(profile.github) },
   { label: 'Location', value: profile.location, text: profile.location },
